@@ -29,9 +29,8 @@ export default class DirectionButton extends React.Component<Prop, {}>
     const textColor: string = DirectionButton.getTextColor(color);
     return <a
       className={`button btn-floating waves-effect ${color}`}
-      style={{color: textColor}}
     >
-      <i className="material-icons">{ direction }</i>
+      <i className="material-icons" style={{color: textColor}}>{ direction }</i>
     </a>
   }
 

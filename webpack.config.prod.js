@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+const JavaScriptObfuscator = require('webpack-obfuscator');
 
 module.exports = {
   mode: "production",
@@ -22,12 +22,9 @@ module.exports = {
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: './src/index.ejs'
-    })
+    }),
+    new JavaScriptObfuscator ()
   ],
-
-  optimization: {
-    minimizer: [new TerserPlugin()],
-  },
 
   module: {
     rules: [

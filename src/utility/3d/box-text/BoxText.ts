@@ -17,12 +17,12 @@ import {
   ANIMATION_TOTAL_FRAME,
   TEXTURE_SIZE
 } from './BoxText.constant';
-import {ScreenSizeObserverInterface} from "../screen-size-observer/ScreenSizeObserver";
 import Font from "../../font/Font";
 import Color from "../../color/Color";
 import Point from "../../point/Point";
 import TextureDecorator from "../texture-decorator/TextureDecorator";
 import MaterialFactory from "../material-factory/MaterialFactory";
+import {ScreenSizeObserverInterface} from "../../screen-size-observer/ScreenSizeObserver";
 
 export class BoxText implements ScreenSizeObserverInterface
 {
@@ -144,7 +144,7 @@ export class BoxText implements ScreenSizeObserverInterface
         height: TEXTURE_SIZE
       }, this._scene, null);
       const textureDecoratorBottom: TextureDecorator = new TextureDecorator(dynamicTextureBottom);
-      const fontBottom: Font = BoxText.getBoxProperty(dynamicTextureBottom, this._color, this._text[i], this._fontFamily, this._fontType, screenSize);
+      const fontBottom: Font = BoxText.getBoxProperty(dynamicTextureBottom, new Color(this._color.back, this._color.fore), this._text[i], this._fontFamily, this._fontType, screenSize);
       textureDecoratorBottom.drawText(
         this._text[i],
         fontBottom

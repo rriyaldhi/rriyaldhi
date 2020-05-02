@@ -5,7 +5,7 @@ import DirectionButton, {Color, Direction} from "./direction-button/DirectionBut
 
 describe("App", () =>
 {
-  it("render app", () =>
+  it("should render app", () =>
   {
     const result = shallow(<App />)
       .equals(<div id={'app'}>

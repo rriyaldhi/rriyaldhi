@@ -13,7 +13,7 @@ describe('SceneSingleton', () =>
     expect(scene1).toEqual(scene2);
   });
 
-  it('should get the different scene', () =>
+  it('should get different scene', () =>
   {
     const canvas: HTMLCanvasElement = document.createElement('canvas');
     const engine: Engine = EngineSingleton.getInstance(canvas);

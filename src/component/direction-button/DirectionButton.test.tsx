@@ -4,7 +4,7 @@ import DirectionButton, {Color, Direction} from "./DirectionButton";
 
 describe("DirectionButton", () =>
 {
-  it("render white button", () =>
+  it("should render white button", () =>
   {
     const result = shallow(<DirectionButton
       direction={Direction.DOWN}
@@ -19,7 +19,7 @@ describe("DirectionButton", () =>
     expect(result).toBeTruthy();
   });
 
-  it("render black button", () =>
+  it("should render black button", () =>
   {
     const result = shallow(<DirectionButton
       direction={Direction.DOWN}

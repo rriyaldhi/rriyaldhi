@@ -1,6 +1,6 @@
 import * as React from "react";
 import "./App.sass";
-import DirectionButton, { Direction as ButtonDirection } from "./direction-button/DirectionButton";
+import DirectionButton, {Color, Direction} from "./direction-button/DirectionButton";
 
 export class App extends React.Component<{}, {}>
 {
@@ -8,7 +8,7 @@ export class App extends React.Component<{}, {}>
   {
     return <div id={'app'}>
       <span className={'meta-description'}>Once upon a time in a small town...</span>
-      <DirectionButton direction={ButtonDirection.DOWN} />
+      <DirectionButton direction={Direction.DOWN} color={Color.WHITE} />
     </div>;
   }
 }

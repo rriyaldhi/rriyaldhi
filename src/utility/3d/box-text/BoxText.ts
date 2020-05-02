@@ -125,61 +125,67 @@ export class BoxText implements ScreenSizeObserverInterface
 
   private build(screenSize: number): void
   {
-    let i: number;
-    for (i = 0; i < this._text.length; i++)
+    try
     {
-      const dynamicTextureFront: DynamicTexture = new DynamicTexture('textureFront', {
-        width: TEXTURE_SIZE,
-        height: TEXTURE_SIZE
-      }, this._scene, null);
-      const textureDecoratorFront: TextureDecorator = new TextureDecorator(dynamicTextureFront);
-      const fontFront: Font = BoxText.getBoxProperty(dynamicTextureFront, this._color, this._text[i], this._fontFamily, this._fontType, screenSize);
-      textureDecoratorFront.drawText(
-        this._text[i],
-        fontFront
-      );
+      let i: number;
+      for (i = 0; i < this._text.length; i++)
+      {
+        const dynamicTextureFront: DynamicTexture = new DynamicTexture('textureFront', {
+          width: TEXTURE_SIZE,
+          height: TEXTURE_SIZE
+        }, this._scene, null);
+        const textureDecoratorFront: TextureDecorator = new TextureDecorator(dynamicTextureFront);
+        const fontFront: Font = BoxText.getBoxProperty(dynamicTextureFront, this._color, this._text[i], this._fontFamily, this._fontType, screenSize);
+        textureDecoratorFront.drawText(
+          this._text[i],
+          fontFront
+        );
 
-      const dynamicTextureBottom: DynamicTexture = new DynamicTexture('textureBottom', {
-        width: TEXTURE_SIZE,
-        height: TEXTURE_SIZE
-      }, this._scene, null);
-      const textureDecoratorBottom: TextureDecorator = new TextureDecorator(dynamicTextureBottom);
-      const fontBottom: Font = BoxText.getBoxProperty(dynamicTextureBottom, new Color(this._color.back, this._color.fore), this._text[i], this._fontFamily, this._fontType, screenSize);
-      textureDecoratorBottom.drawText(
-        this._text[i],
-        fontBottom
-      );
-      textureDecoratorBottom.rotate(0, 0, -Math.PI / 2);
+        const dynamicTextureBottom: DynamicTexture = new DynamicTexture('textureBottom', {
+          width: TEXTURE_SIZE,
+          height: TEXTURE_SIZE
+        }, this._scene, null);
+        const textureDecoratorBottom: TextureDecorator = new TextureDecorator(dynamicTextureBottom);
+        const fontBottom: Font = BoxText.getBoxProperty(dynamicTextureBottom, new Color(this._color.back, this._color.fore), this._text[i], this._fontFamily, this._fontType, screenSize);
+        textureDecoratorBottom.drawText(
+          this._text[i],
+          fontBottom
+        );
+        textureDecoratorBottom.rotate(0, 0, -Math.PI / 2);
 
-      const materialFront: StandardMaterial = MaterialFactory.buildStandardMaterial(
-        'materialFront',
-        this._scene,
-        textureDecoratorFront.dynamicTexture,
-        Color3.White()
-      );
-      const materialBottom: StandardMaterial = MaterialFactory.buildStandardMaterial(
-        'materialBottom',
-        this._scene,
-        textureDecoratorBottom.dynamicTexture,
-        Color3.White()
-      );
+        const materialFront: StandardMaterial = MaterialFactory.buildStandardMaterial(
+          'materialFront',
+          this._scene,
+          textureDecoratorFront.dynamicTexture,
+          Color3.White()
+        );
+        const materialBottom: StandardMaterial = MaterialFactory.buildStandardMaterial(
+          'materialBottom',
+          this._scene,
+          textureDecoratorBottom.dynamicTexture,
+          Color3.White()
+        );
 
-      const multiMaterial: MultiMaterial = new MultiMaterial('multiMaterial', this._scene);
-      multiMaterial.subMaterials.push(materialFront);
-      multiMaterial.subMaterials.push(materialBottom);
+        const multiMaterial: MultiMaterial = new MultiMaterial('multiMaterial', this._scene);
+        multiMaterial.subMaterials.push(materialFront);
+        multiMaterial.subMaterials.push(materialBottom);
 
-      const size: number = BoxText.getBoxSize(screenSize, this._size);
-      const boxMesh: Mesh = MeshBuilder.CreateBox(`mesh${i}`, BoxText.getBoxOption(size), this._scene);
-      boxMesh.position.x = (i * size) - ((this._text.length * size) / 2) + (size / 2);
-      boxMesh.material = multiMaterial;
+        const size: number = BoxText.getBoxSize(screenSize, this._size);
+        const boxMesh: Mesh = MeshBuilder.CreateBox(`mesh${i}`, BoxText.getBoxOption(size), this._scene);
+        boxMesh.position.x = (i * size) - ((this._text.length * size) / 2) + (size / 2);
+        boxMesh.material = multiMaterial;
 
-      const totalVertices: number = boxMesh.getTotalVertices();
-      boxMesh.subMeshes = [];
-      boxMesh.subMeshes.push(new SubMesh(0, 0, totalVertices, 7, 6, boxMesh));
+        const totalVertices: number = boxMesh.getTotalVertices();
+        boxMesh.subMeshes = [];
+        boxMesh.subMeshes.push(new SubMesh(0, 0, totalVertices, 7, 6, boxMesh));
 
-      boxMesh.visibility = 0;
+        boxMesh.visibility = 0;
 
-      this._boxMeshes.push(boxMesh);
+        this._boxMeshes.push(boxMesh);
+      }
+    }
+    catch (error)
+    {
     }
   }
 

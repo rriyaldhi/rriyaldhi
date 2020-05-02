@@ -1,7 +1,6 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 import {App} from "./App";
-import 'materialize-css';
 import DirectionButton, {Direction as ButtonDirection} from "./direction-button/DirectionButton";
 
 it("render app", () => {

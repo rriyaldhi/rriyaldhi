@@ -1,6 +1,6 @@
 import Font from './Font';
+import Point from "../point/Point";
 import Color from "../color/Color";
-import Point from "../../point/Point";
 
 describe('Font', () =>
 {

@@ -2,11 +2,13 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import {App} from "./App";
 import 'materialize-css';
+import DirectionButton, {Direction as ButtonDirection} from "./direction-button/DirectionButton";
 
-it("renders app", () => {
+it("render app", () => {
   const result = shallow(<App />)
     .equals(<div id={'app'}>
-      <span style={{display: 'none'}}>Once upon a time in a small town...</span>
+      <span className={'meta-description'}>Once upon a time in a small town...</span>
+      <DirectionButton direction={ButtonDirection.DOWN} />
     </div>);
   expect(result).toBeTruthy();
 });

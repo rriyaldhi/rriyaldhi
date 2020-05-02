@@ -2,7 +2,6 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlWebpackPartialsPlugin = require('html-webpack-partials-plugin');
 
 module.exports = {
   mode: "development",
@@ -66,7 +65,7 @@ module.exports = {
   },
 
   devServer: {
-    contentBase: __dirname + 'dist',
+    contentBase: __dirname + '/dist',
     compress: true,
     port: 9000
   }

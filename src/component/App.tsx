@@ -2,7 +2,7 @@ import * as React from "react";
 import "./App.sass";
 import DirectionButton, {Color, Direction} from "./direction-button/DirectionButton";
 
-export class App extends React.Component<{}, {}>
+export default class App extends React.Component<{}, {}>
 {
   render()
   {

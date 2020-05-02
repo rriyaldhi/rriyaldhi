@@ -10,7 +10,6 @@ describe("App", () =>
     const result = shallow(<App />)
       .equals(<div id={'app'}>
         <span className={'meta-description'}>Once upon a time in a small town...</span>
-        <DirectionButton direction={Direction.DOWN} color={Color.WHITE} />
       </div>);
     expect(result).toBeTruthy();
   });

@@ -2,31 +2,37 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import DirectionButton, {Color, Direction} from "./DirectionButton";
 
-it("render white button", () => {
-  const result = shallow(<DirectionButton
-    direction={Direction.DOWN}
-    color={Color.WHITE}
-  />)
-    .equals(<a
-      className={`button btn-floating waves-effect ${Color.WHITE}`}
-      style={{color: Color.BLACK}}
-    >
-      <i className="material-icons">{ Direction.DOWN }</i>
-    </a>);
-  expect(result).toBeTruthy();
-});
+describe("DirectionButton", () =>
+{
+  it("render white button", () =>
+  {
+    const result = shallow(<DirectionButton
+      direction={Direction.DOWN}
+      color={Color.WHITE}
+    />)
+      .equals(<a
+        className={`button btn-floating waves-effect ${Color.WHITE}`}
+        style={{color: Color.BLACK}}
+      >
+        <i className="material-icons">{ Direction.DOWN }</i>
+      </a>);
+    expect(result).toBeTruthy();
+  });
 
-it("render black button", () => {
-  const result = shallow(<DirectionButton
-    direction={Direction.DOWN}
-    color={Color.BLACK}
-  />)
-    .equals(<a
-      className={`button btn-floating waves-effect ${Color.BLACK}`}
-      style={{color: Color.WHITE}}
-    >
-      <i className="material-icons">{ Direction.DOWN }</i>
-    </a>);
-  expect(result).toBeTruthy();
+  it("render black button", () =>
+  {
+    const result = shallow(<DirectionButton
+      direction={Direction.DOWN}
+      color={Color.BLACK}
+    />)
+      .equals(<a
+        className={`button btn-floating waves-effect ${Color.BLACK}`}
+        style={{color: Color.WHITE}}
+      >
+        <i className="material-icons">{ Direction.DOWN }</i>
+      </a>);
+    expect(result).toBeTruthy();
+  });
+
 });
 

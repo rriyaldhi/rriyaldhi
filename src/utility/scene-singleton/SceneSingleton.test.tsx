@@ -4,7 +4,8 @@ import {Engine, Scene} from 'babylonjs';
 
 describe('SceneSingleton', () =>
 {
-  it('should get the same scene', () => {
+  it('should get the same scene', () =>
+  {
     const canvas: HTMLCanvasElement = document.createElement('canvas');
     const engine: Engine = EngineSingleton.getInstance(canvas);
     const scene1: Scene = SceneSingleton.getInstance(engine);
@@ -12,7 +13,8 @@ describe('SceneSingleton', () =>
     expect(scene1).toEqual(scene2);
   });
 
-  it('should get the different scene', () => {
+  it('should get the different scene', () =>
+  {
     const canvas: HTMLCanvasElement = document.createElement('canvas');
     const engine: Engine = EngineSingleton.getInstance(canvas);
     const scene1: Scene = SceneSingleton.getInstance(engine);

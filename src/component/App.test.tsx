@@ -3,11 +3,15 @@ import { shallow } from "enzyme";
 import App from "./App";
 import DirectionButton, {Color, Direction} from "./direction-button/DirectionButton";
 
-it("render app", () => {
-  const result = shallow(<App />)
-    .equals(<div id={'app'}>
-      <span className={'meta-description'}>Once upon a time in a small town...</span>
-      <DirectionButton direction={Direction.DOWN} color={Color.WHITE} />
-    </div>);
-  expect(result).toBeTruthy();
+describe("App", () =>
+{
+  it("render app", () =>
+  {
+    const result = shallow(<App />)
+      .equals(<div id={'app'}>
+        <span className={'meta-description'}>Once upon a time in a small town...</span>
+        <DirectionButton direction={Direction.DOWN} color={Color.WHITE} />
+      </div>);
+    expect(result).toBeTruthy();
+  });
 });

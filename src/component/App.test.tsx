@@ -5,6 +5,7 @@ import {Engine} from "babylonjs/Engines/engine";
 import EngineSingleton from "../utility/3d/engine-singleton/EngineSingleton";
 import SceneSingleton from "../utility/3d/scene-singleton/SceneSingleton";
 import {Vector3, FreeCamera} from "babylonjs";
+import DirectionButton, {Color as DirectionButtonColor, Direction} from "./direction-button/DirectionButton";
 
 // @ts-ignore
 window.document.fonts = {
@@ -32,6 +33,9 @@ describe("App", () =>
         <div id={'title'}>
           <canvas />
         </div>
+        <div id={'button-container-down'}>
+          <DirectionButton direction={Direction.DOWN} color={DirectionButtonColor.BLACK} />
+        </div>
       </div>);
     expect(result).toBeTruthy();
   });
@@ -45,7 +49,7 @@ describe("App", () =>
   it('should be able to resize', () =>
   {
     app['_init']();
-    app._onResize();
+    app['_onResize']();
   });
 
   it('should be able to render', () =>

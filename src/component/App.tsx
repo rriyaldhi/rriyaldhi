@@ -9,6 +9,7 @@ import SceneSingleton from "../utility/3d/scene-singleton/SceneSingleton";
 import {BoxText} from "../utility/3d/box-text/BoxText";
 import Color from "../utility/color/Color";
 import {Vector3, FreeCamera} from "babylonjs";
+import DirectionButton, {Direction, Color as DirectionButtonColor} from "./direction-button/DirectionButton";
 
 export default class App extends React.Component<{}, {}>
 {
@@ -37,12 +38,6 @@ export default class App extends React.Component<{}, {}>
     window.addEventListener("resize", this._onResize);
   }
 
-  _onResize(): void
-  {
-    this._engine.resize();
-    this._screenSizeObserver.notify(window.innerWidth);
-  }
-
   render()
   {
     return <div id={'app'}>
@@ -50,7 +45,16 @@ export default class App extends React.Component<{}, {}>
       <div id={'title'}>
         <canvas ref={this._canvas} />
       </div>
+      <div id={'button-container-down'}>
+        <DirectionButton direction={Direction.DOWN} color={DirectionButtonColor.BLACK} />
+      </div>
     </div>
+  }
+
+  private _onResize(): void
+  {
+    this._engine.resize();
+    this._screenSizeObserver.notify(window.innerWidth);
   }
 
   private _init(): void

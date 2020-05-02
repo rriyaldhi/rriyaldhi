@@ -2,7 +2,7 @@ import Point from './Point';
 
 describe('Point', () =>
 {
-  it('should get the same scene', () =>
+  it('should store point', () =>
   {
     const x: number = 1;
     const y: number = 2;

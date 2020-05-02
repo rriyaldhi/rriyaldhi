@@ -8,7 +8,6 @@ export default class App extends React.Component<{}, {}>
   {
     return <div id={'app'}>
       <span className={'meta-description'}>Once upon a time in a small town...</span>
-      <DirectionButton direction={Direction.DOWN} color={Color.WHITE} />
     </div>;
   }
 }

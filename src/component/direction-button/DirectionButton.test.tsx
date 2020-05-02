@@ -10,11 +10,8 @@ describe("DirectionButton", () =>
       direction={Direction.DOWN}
       color={Color.WHITE}
     />)
-      .equals(<a
-        className={`button btn-floating waves-effect ${Color.WHITE}`}
-        style={{color: Color.BLACK}}
-      >
-        <i className="material-icons">{ Direction.DOWN }</i>
+      .equals(<a className={`button btn-floating waves-effect  ${Color.WHITE}`}>
+        <i className="material-icons" style={{color: Color.BLACK}}>{ Direction.DOWN }</i>
       </a>);
     expect(result).toBeTruthy();
   });
@@ -25,11 +22,8 @@ describe("DirectionButton", () =>
       direction={Direction.DOWN}
       color={Color.BLACK}
     />)
-      .equals(<a
-        className={`button btn-floating waves-effect ${Color.BLACK}`}
-        style={{color: Color.WHITE}}
-      >
-        <i className="material-icons">{ Direction.DOWN }</i>
+      .equals(<a className={`button btn-floating waves-effect waves-light ${Color.BLACK}`}>
+        <i className="material-icons" style={{color: Color.WHITE}}>{ Direction.DOWN }</i>
       </a>);
     expect(result).toBeTruthy();
   });

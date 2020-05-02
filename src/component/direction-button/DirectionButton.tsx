@@ -27,9 +27,8 @@ export default class DirectionButton extends React.Component<Prop, {}>
   {
     const { direction, color } = this.props;
     const textColor: string = DirectionButton.getTextColor(color);
-    return <a
-      className={`button btn-floating waves-effect ${color}`}
-    >
+    const wavesColor: string = DirectionButton.getWavesColor(color);
+    return <a className={`button btn-floating waves-effect ${wavesColor} ${color}`}>
       <i className="material-icons" style={{color: textColor}}>{ direction }</i>
     </a>
   }
@@ -41,5 +40,14 @@ export default class DirectionButton extends React.Component<Prop, {}>
       return Color.BLACK;
     }
     return Color.WHITE;
+  }
+
+  private static getWavesColor(color: string)
+  {
+    if (color == Color.WHITE)
+    {
+      return '';
+    }
+    return 'waves-light';
   }
 }

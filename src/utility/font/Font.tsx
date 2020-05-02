@@ -1,5 +1,5 @@
-import Color from '../color/color';
-import Point from '../../point/Point';
+import Color from "../color/Color";
+import Point from "../point/Point";
 
 export default class Font
 {

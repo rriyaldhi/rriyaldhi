@@ -9,11 +9,11 @@ import {Vector3, FreeCamera} from "babylonjs";
 import {boundMethod} from 'autobind-decorator';
 import Button from "./button/Button";
 import {BOX_COLOR, FONT_FAMILY, FONT_TYPE} from "./App.constant";
-import {Nullable} from "babylonjs/types";
 
 export interface AppState
 {
   page: number,
+  animationRun: boolean,
   contentClasses: Array<string>,
   buttonColor: Color
 }
@@ -40,6 +40,7 @@ export default class App extends React.Component<{}, AppState>
     this.state =
     {
       page: 1,
+      animationRun: false,
       contentClasses: [],
       buttonColor: new Color('white', 'black')
     }
@@ -57,7 +58,7 @@ export default class App extends React.Component<{}, AppState>
 
   render()
   {
-    const { page, contentClasses, buttonColor } = this.state;
+    const { page, animationRun, contentClasses, buttonColor } = this.state;
     const contentClass: string = contentClasses.join(' ');
     const content = this._getContent();
     return <div id={'app'}>
@@ -69,11 +70,15 @@ export default class App extends React.Component<{}, AppState>
         <Button color={buttonColor} wavesLight={true}>keyboard_arrow_up</Button>
       </div>
       <span className={'meta-description'}>once upon a time in a small town...</span>
-      <div id={'content'} ref={this._content} className={contentClass} onAnimationEnd={this._contentAnimationEnd}>
+      <div id={'content'} ref={this._content} className={contentClass}>
         {content}
       </div>
-      <div id={'button-container-down'} className={`animated ${page === 1 ? 'fadeIn' : 'fadeOut'}`}>
-        <Button color={buttonColor} wavesLight={true} clickCallback={this._buttonDownClick}>keyboard_arrow_down</Button>
+      <div
+        id={'button-container-down'}
+        className={`animated ${page === 1 && animationRun ? 'fadeIn' : 'fadeOut'}`}
+        style={{display: animationRun ? 'block' : 'none'}}
+      >
+        <Button color={buttonColor} wavesLight={true} clickCallback={this._buttonDownClickCallback}>keyboard_arrow_down</Button>
       </div>
     </div>
   }
@@ -81,7 +86,6 @@ export default class App extends React.Component<{}, AppState>
   private _getContent(): any
   {
     const { page } = this.state;
-    const pageId: string = `${page.toString()}`;
     if (page === 1)
     {
       return <canvas ref={this._titleCanvas} />
@@ -122,7 +126,8 @@ export default class App extends React.Component<{}, AppState>
       1,
       BOX_COLOR,
       FONT_FAMILY,
-      FONT_TYPE
+      FONT_TYPE,
+      this._boxAnimationEndCallback
     );
     this._boxText.initiate(window.innerWidth);
     this._screenSizeObserver.attach(this._boxText);
@@ -142,7 +147,7 @@ export default class App extends React.Component<{}, AppState>
   }
 
   @boundMethod
-  private _buttonDownClick(): void
+  private _buttonDownClickCallback(): void
   {
     this.setState({
       ...this.state,
@@ -152,14 +157,11 @@ export default class App extends React.Component<{}, AppState>
   }
 
   @boundMethod
-  private _contentAnimationEnd()
+  private _boxAnimationEndCallback(): void
   {
-    this._screenSizeObserver.detach(this._boxText);
     this.setState({
       ...this.state,
-      contentClasses: [],
+      animationRun: true,
     });
-
   }
-
 }

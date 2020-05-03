@@ -32,9 +32,10 @@ export class BoxText implements ScreenSizeObserverInterface
   private readonly _color: Color;
   private readonly _fontFamily: string;
   private readonly _fontType: string;
+  private readonly _animationEndCallback: any;
   private _boxMeshes: Mesh[];
 
-  constructor(scene: Scene, text: string, size: number, color: Color, fontFamily: string, fontType: string)
+  constructor(scene: Scene, text: string, size: number, color: Color, fontFamily: string, fontType: string, animationEndCallback: any)
   {
     this._scene = scene;
     this._boxMeshes = [];
@@ -43,6 +44,7 @@ export class BoxText implements ScreenSizeObserverInterface
     this._color = color;
     this._fontFamily = fontFamily;
     this._fontType = fontType;
+    this._animationEndCallback = animationEndCallback;
   }
 
   private static getBoxOption(size: number): any
@@ -236,7 +238,11 @@ export class BoxText implements ScreenSizeObserverInterface
       Math.PI / 2,
       ANIMATION_HOVER_DURATION,
       null,
-      true
+      true,
+      () =>
+      {
+        this._animationEndCallback();
+      }
     );
     boxMesh.actionManager.registerAction(pointerOverAction);
 
@@ -247,7 +253,11 @@ export class BoxText implements ScreenSizeObserverInterface
       0,
       ANIMATION_HOVER_DURATION,
       null,
-      true
+      true,
+      () =>
+      {
+        this._animationEndCallback();
+      }
     );
     boxMesh.actionManager.registerAction(pointerOutAction);
   }

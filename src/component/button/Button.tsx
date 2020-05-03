@@ -3,7 +3,7 @@ import './Button.sass'
 import Color from "../../utility/color/Color";
 import {boundMethod} from "autobind-decorator";
 
-interface Prop
+export interface ButtonProp
 {
   color?: Color,
   wavesLight?: boolean,
@@ -11,9 +11,9 @@ interface Prop
   children?: Node | string
 }
 
-export default class DirectionButton extends React.Component<Prop, {}>
+export default class Button extends React.Component<ButtonProp, {}>
 {
-  constructor(props: Prop)
+  constructor(props: ButtonProp)
   {
     super(props);
   }

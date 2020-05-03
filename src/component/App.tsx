@@ -9,16 +9,16 @@ import SceneSingleton from "../utility/3d/scene-singleton/SceneSingleton";
 import {BoxText} from "../utility/3d/box-text/BoxText";
 import Color from "../utility/color/Color";
 import {Vector3, FreeCamera} from "babylonjs";
-import DirectionButton, {Direction, Color as DirectionButtonColor} from "./direction-button/DirectionButton";
-import {boundMethod} from 'autobind-decorator'
+import {boundMethod} from 'autobind-decorator';
+import Button from "./button/Button";
 
-interface State
+export interface AppState
 {
   contentClasses: Array<string>,
-  buttonColor: string
+  buttonColor: Color
 }
 
-export default class App extends React.Component<{}, State>
+export default class App extends React.Component<{}, AppState>
 {
   private _engine: Engine;
   private _scene: Scene;
@@ -37,7 +37,7 @@ export default class App extends React.Component<{}, State>
     this.state =
     {
       contentClasses: [],
-      buttonColor: DirectionButtonColor.BLACK
+      buttonColor: new Color('white', 'black')
     }
   }
 
@@ -61,7 +61,7 @@ export default class App extends React.Component<{}, State>
         <canvas ref={this._canvas} />
       </div>
       <div id={'button-container-down'}>
-        <DirectionButton direction={Direction.DOWN} color={buttonColor} clickCallback={this._buttonDownClick} />
+        <Button color={buttonColor} clickCallback={this._buttonDownClick}>keyboard_arrow_down</Button>
       </div>
     </div>
   }
@@ -111,7 +111,7 @@ export default class App extends React.Component<{}, State>
     this.setState({
       ...this.state,
       contentClasses,
-      buttonColor: DirectionButtonColor.WHITE,
+      buttonColor: new Color('black', 'white'),
     });
   }
 

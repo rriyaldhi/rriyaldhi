@@ -1,3 +1,9 @@
+import Color from "../utility/color/Color";
+
+export const FONT_FAMILY: string = 'san-francisco';
+export const FONT_TYPE: string = 'normal';
+export const BOX_COLOR: Color = new Color('black', 'white');
+
 export const STORY_CONTENTS: Array<any> =
 [
   {

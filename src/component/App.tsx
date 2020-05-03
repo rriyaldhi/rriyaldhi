@@ -10,22 +10,35 @@ import {BoxText} from "../utility/3d/box-text/BoxText";
 import Color from "../utility/color/Color";
 import {Vector3, FreeCamera} from "babylonjs";
 import DirectionButton, {Direction, Color as DirectionButtonColor} from "./direction-button/DirectionButton";
+import {boundMethod} from 'autobind-decorator'
 
-export default class App extends React.Component<{}, {}>
+interface State
+{
+  contentClasses: Array<string>,
+  buttonColor: string
+}
+
+export default class App extends React.Component<{}, State>
 {
   private _engine: Engine;
   private _scene: Scene;
   private _camera: FreeCamera;
   private _title: BoxText;
   private readonly _screenSizeObserver: ScreenSizeObserver;
+  private readonly _content: any;
   private readonly _canvas: any;
 
   constructor(props: any)
   {
     super(props);
     this._screenSizeObserver = ScreenSizeObserverSingleton.getInstance();
+    this._content = React.createRef();
     this._canvas = React.createRef();
-    this._onResize = this._onResize.bind(this);
+    this.state =
+    {
+      contentClasses: [],
+      buttonColor: DirectionButtonColor.BLACK
+    }
   }
 
   componentDidMount(): void
@@ -40,23 +53,27 @@ export default class App extends React.Component<{}, {}>
 
   render()
   {
+    const { contentClasses, buttonColor } = this.state;
+    const contentClass: string = contentClasses.join(' ');
     return <div id={'app'}>
       <span className={'meta-description'}>once upon a time in a small town...</span>
-      <div id={'title'}>
+      <div id={'content'} className={contentClass}>
         <canvas ref={this._canvas} />
       </div>
       <div id={'button-container-down'}>
-        <DirectionButton direction={Direction.DOWN} color={DirectionButtonColor.BLACK} />
+        <DirectionButton direction={Direction.DOWN} color={buttonColor} clickCallback={this._buttonDownClick} />
       </div>
     </div>
   }
 
+  @boundMethod
   private _onResize(): void
   {
     this._engine.resize();
     this._screenSizeObserver.notify(window.innerWidth);
   }
 
+  @boundMethod
   private _init(): void
   {
     this._engine = EngineSingleton.getInstance(this._canvas.current);
@@ -76,12 +93,26 @@ export default class App extends React.Component<{}, {}>
     this._engine.runRenderLoop(() => this._renderTitle());
   }
 
+  @boundMethod
   private _renderTitle(): void
   {
     if (this && this._scene)
     {
       this._scene.render();
     }
+  }
+
+  @boundMethod
+  private _buttonDownClick(): void
+  {
+    const { contentClasses } = this.state;
+    contentClasses.push('animated');
+    contentClasses.push('fadeOut');
+    this.setState({
+      ...this.state,
+      contentClasses,
+      buttonColor: DirectionButtonColor.WHITE,
+    });
   }
 
 }

@@ -5,9 +5,7 @@ module.exports = {
     "jest-canvas-mock"
   ],
   "moduleFileExtensions": [
-    "ts",
-    "tsx",
-    "js"
+    "js", "json", "jsx", "ts", "tsx"
   ],
   "transform": {
     "^.+\\.(ts|tsx)$": "ts-jest"

@@ -18,22 +18,29 @@ export const Color: any =
 interface Prop
 {
   direction: any,
-  color: any
+  color: any,
+  clickCallback?: Function
 }
 
 export default class DirectionButton extends React.Component<Prop, {}>
 {
+  constructor(props: Prop)
+  {
+    super(props);
+    this._clickCallback = this._clickCallback.bind(this);
+  }
+
   render()
   {
     const { direction, color } = this.props;
-    const textColor: string = DirectionButton.getTextColor(color);
-    const wavesColor: string = DirectionButton.getWavesColor(color);
-    return <a className={`button btn-floating waves-effect ${wavesColor} ${color}`}>
+    const textColor: string = DirectionButton._getTextColor(color);
+    const wavesColor: string = DirectionButton._getWavesColor(color);
+    return <a className={`btn-floating waves-effect ${wavesColor} ${color}`} onClick={this._clickCallback}>
       <i className="material-icons" style={{color: textColor}}>{ direction }</i>
     </a>
   }
 
-  private static getTextColor(color: string)
+  private static _getTextColor(color: string)
   {
     if (color == Color.WHITE)
     {
@@ -42,12 +49,18 @@ export default class DirectionButton extends React.Component<Prop, {}>
     return Color.WHITE;
   }
 
-  private static getWavesColor(color: string)
+  private static _getWavesColor(color: string)
   {
     if (color == Color.WHITE)
     {
       return '';
     }
     return 'waves-light';
+  }
+
+  private _clickCallback(): void
+  {
+    const { clickCallback } = this.props;
+    clickCallback();
   }
 }

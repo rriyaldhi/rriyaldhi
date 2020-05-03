@@ -12,6 +12,7 @@ export default class SceneSingleton
     {
       const scene: Scene = new Scene(engine);
       scene.clearColor = new Color4(1, 1, 1, 1);
+      scene.blockMaterialDirtyMechanism = true;
       if (SceneSingleton._instanceMap == null)
       {
         SceneSingleton._instanceMap = new Map<Engine, Scene>();

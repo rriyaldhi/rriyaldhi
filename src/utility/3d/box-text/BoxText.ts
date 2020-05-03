@@ -180,6 +180,7 @@ export class BoxText implements ScreenSizeObserverInterface
         boxMesh.subMeshes.push(new SubMesh(0, 0, totalVertices, 7, 6, boxMesh));
 
         boxMesh.visibility = 0;
+        boxMesh.doNotSyncBoundingInfo = true;
 
         this._boxMeshes.push(boxMesh);
       }

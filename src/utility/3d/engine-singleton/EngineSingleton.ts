@@ -17,11 +17,9 @@ export default class EngineSingleton
         engine = new Engine
         (
           canvas,
-          true,
-          {
-            preserveDrawingBuffer: true,
-            stencil: true
-          }
+          false,
+          null,
+          true
         );
       }
       catch (error)

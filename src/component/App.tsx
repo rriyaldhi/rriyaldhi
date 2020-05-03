@@ -1,19 +1,19 @@
 import * as React from "react";
 import "./App.sass";
-import {Engine} from "babylonjs/Engines/engine";
-import {Scene} from "babylonjs/scene";
+import {Color4, Engine, Scene} from 'babylonjs';
 import {ScreenSizeObserverSingleton} from "../utility/screen-size-observer/ScreenSizeObserverSingleton";
 import ScreenSizeObserver from "../utility/screen-size-observer/ScreenSizeObserver";
-import EngineSingleton from "../utility/3d/engine-singleton/EngineSingleton";
-import SceneSingleton from "../utility/3d/scene-singleton/SceneSingleton";
 import {BoxText} from "../utility/3d/box-text/BoxText";
 import Color from "../utility/color/Color";
 import {Vector3, FreeCamera} from "babylonjs";
 import {boundMethod} from 'autobind-decorator';
 import Button from "./button/Button";
+import {BOX_COLOR, FONT_FAMILY, FONT_TYPE} from "./App.constant";
+import {Nullable} from "babylonjs/types";
 
 export interface AppState
 {
+  page: number,
   contentClasses: Array<string>,
   buttonColor: Color
 }
@@ -22,20 +22,24 @@ export default class App extends React.Component<{}, AppState>
 {
   private _engine: Engine;
   private _scene: Scene;
-  private _camera: FreeCamera;
-  private _title: BoxText;
+  private _boxText: BoxText;
   private readonly _screenSizeObserver: ScreenSizeObserver;
   private readonly _content: any;
-  private readonly _canvas: any;
+  private readonly _titleCanvas: any;
+  private readonly _emailCanvas: any;
+  private readonly _linkedInCanvas: any;
 
   constructor(props: any)
   {
     super(props);
     this._screenSizeObserver = ScreenSizeObserverSingleton.getInstance();
     this._content = React.createRef();
-    this._canvas = React.createRef();
+    this._titleCanvas = React.createRef();
+    this._emailCanvas = React.createRef();
+    this._linkedInCanvas = React.createRef();
     this.state =
     {
+      page: 1,
       contentClasses: [],
       buttonColor: new Color('white', 'black')
     }
@@ -45,25 +49,49 @@ export default class App extends React.Component<{}, AppState>
   {
     // @ts-ignore
     document.fonts.load('10pt "san-francisco"').then(() =>
-      {
-        this._init();
-      });
+    {
+      this._initializeCanvas();
+    });
     window.addEventListener("resize", this._onResize);
   }
 
   render()
   {
-    const { contentClasses, buttonColor } = this.state;
+    const { page, contentClasses, buttonColor } = this.state;
     const contentClass: string = contentClasses.join(' ');
+    const content = this._getContent();
     return <div id={'app'}>
-      <span className={'meta-description'}>once upon a time in a small town...</span>
-      <div id={'content'} className={contentClass}>
-        <canvas ref={this._canvas} />
+      <div
+        id={'button-container-up'}
+        className={`animated ${page === 2 ? 'fadeIn' : 'fadeOut'}`}
+        style={{display: page === 2 ? 'block' : 'none'}}
+      >
+        <Button color={buttonColor} wavesLight={true}>keyboard_arrow_up</Button>
       </div>
-      <div id={'button-container-down'}>
-        <Button color={buttonColor} clickCallback={this._buttonDownClick}>keyboard_arrow_down</Button>
+      <span className={'meta-description'}>once upon a time in a small town...</span>
+      <div id={'content'} ref={this._content} className={contentClass} onAnimationEnd={this._contentAnimationEnd}>
+        {content}
+      </div>
+      <div id={'button-container-down'} className={`animated ${page === 1 ? 'fadeIn' : 'fadeOut'}`}>
+        <Button color={buttonColor} wavesLight={true} clickCallback={this._buttonDownClick}>keyboard_arrow_down</Button>
       </div>
     </div>
+  }
+
+  private _getContent(): any
+  {
+    const { page } = this.state;
+    const pageId: string = `${page.toString()}`;
+    if (page === 1)
+    {
+      return <canvas ref={this._titleCanvas} />
+    }
+    else if (page === 2)
+    {
+      return <div>
+      </div>
+    }
+    return <div />
   }
 
   @boundMethod
@@ -74,27 +102,38 @@ export default class App extends React.Component<{}, AppState>
   }
 
   @boundMethod
-  private _init(): void
+  private _initializeCanvas(): void
   {
-    this._engine = EngineSingleton.getInstance(this._canvas.current);
+    this._engine = new Engine
+    (
+      this._titleCanvas.current,
+      false,
+      null,
+      true
+    );
     this._engine.setHardwareScalingLevel(1 / window.devicePixelRatio);
-    this._scene = SceneSingleton.getInstance(this._engine);
-    this._camera = new FreeCamera('camera', new Vector3(0, 0, -10), this._scene);
-    this._title = new BoxText(
+    this._scene = new Scene(this._engine);
+    this._scene.clearColor = new Color4(1, 1, 1, 1);
+    this._scene.blockMaterialDirtyMechanism = true;
+    new FreeCamera('camera', new Vector3(0, 0, -15), this._scene);
+    this._boxText = new BoxText(
       this._scene,
       'rizky riyaldhi',
-      0.8,
-       new Color('black', 'white'),
-      'san-francisco',
-      'normal'
+      1,
+      BOX_COLOR,
+      FONT_FAMILY,
+      FONT_TYPE
     );
-    this._title.initiate(window.innerWidth);
-    this._screenSizeObserver.attach(this._title);
-    this._engine.runRenderLoop(() => this._renderTitle());
+    this._boxText.initiate(window.innerWidth);
+    this._screenSizeObserver.attach(this._boxText);
+    this._engine.runRenderLoop(() =>
+    {
+      this._renderCanvas();
+    });
   }
 
   @boundMethod
-  private _renderTitle(): void
+  private _renderCanvas(): void
   {
     if (this && this._scene)
     {
@@ -105,14 +144,22 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _buttonDownClick(): void
   {
-    const { contentClasses } = this.state;
-    contentClasses.push('animated');
-    contentClasses.push('fadeOut');
     this.setState({
       ...this.state,
-      contentClasses,
-      buttonColor: new Color('black', 'white'),
+      page: 2,
+      contentClasses: ['animated', 'fadeOut']
     });
+  }
+
+  @boundMethod
+  private _contentAnimationEnd()
+  {
+    this._screenSizeObserver.detach(this._boxText);
+    this.setState({
+      ...this.state,
+      contentClasses: [],
+    });
+
   }
 
 }

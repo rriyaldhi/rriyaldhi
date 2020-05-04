@@ -18,10 +18,9 @@ export interface AppState
   buttonColor: Color,
   buttonWavesLight: boolean,
   buttonContainerUpRender: boolean,
+  buttonContainerDownRender: boolean,
   buttonContainerUpShow: boolean,
-  buttonContainerUpHide: boolean,
-  buttonContainerDownHide: boolean,
-  contentEndUpdated: boolean
+  buttonContainerDownShow: boolean
 }
 
 export default class App extends React.Component<{}, AppState>
@@ -49,10 +48,9 @@ export default class App extends React.Component<{}, AppState>
       buttonColor: new Color('white', 'black'),
       buttonWavesLight: true,
       buttonContainerUpRender: false,
+      buttonContainerDownRender: true,
       buttonContainerUpShow: true,
-      buttonContainerUpHide: false,
-      buttonContainerDownHide: false,
-      contentEndUpdated: false
+      buttonContainerDownShow: true
     }
   }
 
@@ -68,7 +66,7 @@ export default class App extends React.Component<{}, AppState>
 
   render()
   {
-    const { page, animationRun, contentAnimation, buttonColor, buttonWavesLight, buttonContainerUpRender, buttonContainerUpShow, buttonContainerUpHide, buttonContainerDownHide } = this.state;
+    const { page, animationRun, contentAnimation, buttonColor, buttonWavesLight, buttonContainerUpRender, buttonContainerUpShow, buttonContainerDownRender, buttonContainerDownShow} = this.state;
     let multiplier = 1;
     const windowWidth = window.innerWidth;
     if (windowWidth < 720)
@@ -78,8 +76,9 @@ export default class App extends React.Component<{}, AppState>
 
     return <div id={'app'}>
       {
-        animationRun && buttonContainerUpRender && !buttonContainerUpHide && <div
+        animationRun && buttonContainerUpRender && <div
           className={`button-container-up animated ${buttonContainerUpShow ? 'fadeIn' : 'fadeOut'}`}
+          onAnimationEnd={this._buttonContainerUpAnimationEndCallback}
         >
           <Button color={buttonColor} wavesLight={buttonWavesLight} clickCallback={this._buttonUpClickCallback}>
             keyboard_arrow_up
@@ -110,8 +109,9 @@ export default class App extends React.Component<{}, AppState>
         }
       </div>
       {
-        animationRun && !buttonContainerDownHide && <div
-          className={`button-container-down animated ${page < STORY_CONTENTS.length + 2 ? 'fadeIn' : 'fadeOut'}`}
+        animationRun && buttonContainerDownRender && <div
+          className={`button-container-down animated ${buttonContainerDownShow ? 'fadeIn' : 'fadeOut'}`}
+          onAnimationEnd={this._buttonContainerDownAnimationEndCallback}
         >
           <Button color={buttonColor} wavesLight={buttonWavesLight} clickCallback={this._buttonDownClickCallback}>
             keyboard_arrow_down
@@ -183,7 +183,8 @@ export default class App extends React.Component<{}, AppState>
           ...this.state,
           contentAnimation: 'fadeOut',
           buttonColor: new Color('white', 'black'),
-          buttonWavesLight: false
+          buttonWavesLight: false,
+          buttonContainerDownRender: true,
         });
       }
       else
@@ -191,6 +192,7 @@ export default class App extends React.Component<{}, AppState>
         this.setState({
           ...this.state,
           contentAnimation: 'fadeOut',
+          buttonContainerDownRender: true,
         });
       }
     }
@@ -211,7 +213,6 @@ export default class App extends React.Component<{}, AppState>
           buttonColor: new Color('black', 'white'),
           buttonWavesLight: false,
           buttonContainerUpRender: true,
-          buttonContainerUpHide: false
         });
       }
       else
@@ -230,6 +231,7 @@ export default class App extends React.Component<{}, AppState>
     this.setState({
       ...this.state,
       animationRun: true,
+      buttonContainerDownShow: true
     });
   }
 
@@ -255,9 +257,38 @@ export default class App extends React.Component<{}, AppState>
         page: newPage,
         contentAnimation: page > 2 ? 'fadeIn faster' : 'fadeIn',
         buttonContainerUpShow: newPage != 1,
-        contentEndUpdated: true
+        buttonContainerDownShow: newPage < STORY_CONTENTS.length + 2
       });
       this._buttonClicked = -1;
     }
   }
+
+  @boundMethod
+  private _buttonContainerUpAnimationEndCallback()
+  {
+    const { buttonContainerUpShow } = this.state;
+    if (!buttonContainerUpShow)
+    {
+      this.setState({
+        ...this.state,
+        buttonContainerUpRender: false,
+        buttonContainerUpShow: true
+      })
+    }
+  }
+
+  @boundMethod
+  private _buttonContainerDownAnimationEndCallback()
+  {
+    const { buttonContainerDownShow } = this.state;
+    if (!buttonContainerDownShow)
+    {
+      this.setState({
+        ...this.state,
+        buttonContainerDownRender: false,
+        buttonContainerDownShow: true
+      })
+    }
+  }
+
 }

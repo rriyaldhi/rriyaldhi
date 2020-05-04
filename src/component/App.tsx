@@ -28,8 +28,6 @@ export default class App extends React.Component<{}, AppState>
   private readonly _screenSizeObserver: ScreenSizeObserver;
   private readonly _content: any;
   private readonly _titleCanvas: any;
-  private readonly _emailCanvas: any;
-  private readonly _linkedInCanvas: any;
 
   constructor(props: any)
   {
@@ -37,8 +35,6 @@ export default class App extends React.Component<{}, AppState>
     this._screenSizeObserver = ScreenSizeObserverSingleton.getInstance();
     this._content = React.createRef();
     this._titleCanvas = React.createRef();
-    this._emailCanvas = React.createRef();
-    this._linkedInCanvas = React.createRef();
     this._buttonClicked = -1;
     this.state =
     {
@@ -65,8 +61,7 @@ export default class App extends React.Component<{}, AppState>
     const { page, animationRun, contentAnimation, buttonColor, buttonWavesLight } = this.state;
     return <div id={'app'}>
       <div
-        id={'button-container-up'}
-        className={`animated ${page === 2 ? 'fadeIn' : 'fadeOut'}`}
+        className={`button-container-up animated ${page === 2 ? 'fadeIn' : 'fadeOut'}`}
         style={{display: page === 2 ? 'block' : 'none'}}
       >
         <Button color={buttonColor} wavesLight={buttonWavesLight} clickCallback={this._buttonUpClickCallback}>
@@ -75,22 +70,18 @@ export default class App extends React.Component<{}, AppState>
       </div>
       <span className={'meta-description'}>once upon a time in a small town...</span>
       <div
-        id={'content'}
         ref={this._content}
-        className={`animated ${contentAnimation}`}
+        className={`content animated ${contentAnimation}`}
         onAnimationEnd={this._contentAnimationEndCallback}
       >
-        <div style={{display: page === 1 ? 'block' : 'none'}}>
-          <canvas ref={this._titleCanvas} />
-        </div>
+        <canvas ref={this._titleCanvas} style={{visibility: page === 1 ? 'visible' : 'hidden'}} />
         <div className={'contact'} style={{display: page === 2 ? 'block' : 'none'}}>
           <div className={'content'}>rriyaldhi@gmail.com</div>
           <div className={'content'}>linkedin.com/rriyaldhi</div>
         </div>
       </div>
       <div
-        id={'button-container-down'}
-        className={`animated ${page === 1 && animationRun ? 'fadeIn' : 'fadeOut'}`}
+        className={`button-container-down animated ${page === 1 && animationRun ? 'fadeIn' : 'fadeOut'}`}
         style={{display: animationRun ? 'block' : 'none'}}
       >
         <Button color={buttonColor} wavesLight={buttonWavesLight} clickCallback={this._buttonDownClickCallback}>
@@ -103,6 +94,7 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _onResize(): void
   {
+    this._titleCanvas.current.width = 0.8 * window.innerWidth;
     this._engine.resize();
     this._screenSizeObserver.notify(window.innerWidth);
   }
@@ -121,7 +113,7 @@ export default class App extends React.Component<{}, AppState>
     this._scene = new Scene(this._engine);
     this._scene.clearColor = new Color4(1, 1, 1, 1);
     this._scene.blockMaterialDirtyMechanism = true;
-    new FreeCamera('camera', new Vector3(0, 0, -15), this._scene);
+    new FreeCamera('camera', new Vector3(0, 0, -10), this._scene);
     this._boxText = new BoxText(
       this._scene,
       'rizky riyaldhi',

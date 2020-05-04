@@ -8,7 +8,7 @@ import Color from "../utility/color/Color";
 import {Vector3, FreeCamera} from "babylonjs";
 import {boundMethod} from 'autobind-decorator';
 import Button from "./button/Button";
-import {BOX_COLOR, FONT_FAMILY, FONT_TYPE} from "./App.constant";
+import {BOX_COLOR, FONT_FAMILY, FONT_TYPE, STORY_CONTENTS} from "./App.constant";
 
 export interface AppState
 {
@@ -17,6 +17,11 @@ export interface AppState
   contentAnimation: string,
   buttonColor: Color,
   buttonWavesLight: boolean,
+  buttonContainerUpRender: boolean,
+  buttonContainerUpShow: boolean,
+  buttonContainerUpHide: boolean,
+  buttonContainerDownHide: boolean,
+  contentEndUpdated: boolean
 }
 
 export default class App extends React.Component<{}, AppState>
@@ -26,8 +31,8 @@ export default class App extends React.Component<{}, AppState>
   private _boxText: BoxText;
   private _buttonClicked: number;
   private readonly _screenSizeObserver: ScreenSizeObserver;
-  private readonly _content: any;
-  private readonly _titleCanvas: any;
+  private readonly _content: React.RefObject<any>;
+  private readonly _titleCanvas: React.RefObject<any>;
 
   constructor(props: any)
   {
@@ -42,7 +47,12 @@ export default class App extends React.Component<{}, AppState>
       animationRun: false,
       contentAnimation: '',
       buttonColor: new Color('white', 'black'),
-      buttonWavesLight: false
+      buttonWavesLight: true,
+      buttonContainerUpRender: false,
+      buttonContainerUpShow: true,
+      buttonContainerUpHide: false,
+      buttonContainerDownHide: false,
+      contentEndUpdated: false
     }
   }
 
@@ -58,16 +68,24 @@ export default class App extends React.Component<{}, AppState>
 
   render()
   {
-    const { page, animationRun, contentAnimation, buttonColor, buttonWavesLight } = this.state;
+    const { page, animationRun, contentAnimation, buttonColor, buttonWavesLight, buttonContainerUpRender, buttonContainerUpShow, buttonContainerUpHide, buttonContainerDownHide } = this.state;
+    let multiplier = 1;
+    const windowWidth = window.innerWidth;
+    if (windowWidth < 720)
+    {
+      multiplier = 0.5;
+    }
+
     return <div id={'app'}>
-      <div
-        className={`button-container-up animated ${page === 2 ? 'fadeIn' : 'fadeOut'}`}
-        style={{display: page === 2 ? 'block' : 'none'}}
-      >
-        <Button color={buttonColor} wavesLight={buttonWavesLight} clickCallback={this._buttonUpClickCallback}>
-          keyboard_arrow_up
-        </Button>
-      </div>
+      {
+        animationRun && buttonContainerUpRender && !buttonContainerUpHide && <div
+          className={`button-container-up animated ${buttonContainerUpShow ? 'fadeIn' : 'fadeOut'}`}
+        >
+          <Button color={buttonColor} wavesLight={buttonWavesLight} clickCallback={this._buttonUpClickCallback}>
+            keyboard_arrow_up
+          </Button>
+        </div>
+      }
       <span className={'meta-description'}>once upon a time in a small town...</span>
       <div
         ref={this._content}
@@ -79,15 +97,27 @@ export default class App extends React.Component<{}, AppState>
           <div className={'content'}>rriyaldhi@gmail.com</div>
           <div className={'content'}>linkedin.com/rriyaldhi</div>
         </div>
+        {
+          page > 2 && <div className={'story'} style={{display: page > 2 ? 'block' : 'none'}}>
+            <div className={'image'}>
+              <img src={`${STORY_CONTENTS[page - 3].image}.jpg`} width={multiplier * STORY_CONTENTS[page - 3].width}/>
+            </div>
+            <div
+              className={'caption'}
+              dangerouslySetInnerHTML={{ __html: STORY_CONTENTS[page - 3].caption }}
+            />
+          </div>
+        }
       </div>
-      <div
-        className={`button-container-down animated ${page === 1 && animationRun ? 'fadeIn' : 'fadeOut'}`}
-        style={{display: animationRun ? 'block' : 'none'}}
-      >
-        <Button color={buttonColor} wavesLight={buttonWavesLight} clickCallback={this._buttonDownClickCallback}>
-          keyboard_arrow_down
-        </Button>
-      </div>
+      {
+        animationRun && !buttonContainerDownHide && <div
+          className={`button-container-down animated ${page < STORY_CONTENTS.length + 2 ? 'fadeIn' : 'fadeOut'}`}
+        >
+          <Button color={buttonColor} wavesLight={buttonWavesLight} clickCallback={this._buttonDownClickCallback}>
+            keyboard_arrow_down
+          </Button>
+        </div>
+      }
     </div>
   }
 
@@ -145,21 +175,24 @@ export default class App extends React.Component<{}, AppState>
   {
     const { page } = this.state;
     this._buttonClicked = 1;
-    if (page == 2)
+    if (page > 1)
     {
-      this.setState({
-        ...this.state,
-        contentAnimation: 'fadeOut',
-        buttonColor: new Color('white', 'black'),
-        buttonWavesLight: false
-      });
-    }
-    else
-    {
-      this.setState({
-        ...this.state,
-        contentAnimation: 'fadeOut',
-      });
+      if (page == 2)
+      {
+        this.setState({
+          ...this.state,
+          contentAnimation: 'fadeOut',
+          buttonColor: new Color('white', 'black'),
+          buttonWavesLight: false
+        });
+      }
+      else
+      {
+        this.setState({
+          ...this.state,
+          contentAnimation: 'fadeOut',
+        });
+      }
     }
   }
 
@@ -168,21 +201,26 @@ export default class App extends React.Component<{}, AppState>
   {
     const { page } = this.state;
     this._buttonClicked = 2;
-    if (page == 1)
+    if ((page < STORY_CONTENTS.length + 2))
     {
-      this.setState({
-        ...this.state,
-        contentAnimation: 'fadeOut',
-        buttonColor: new Color('black', 'white'),
-        buttonWavesLight: true
-      });
-    }
-    else
-    {
-      this.setState({
-        ...this.state,
-        contentAnimation: 'fadeOut',
-      });
+      if (page == 1)
+      {
+        this.setState({
+          ...this.state,
+          contentAnimation: 'fadeOut',
+          buttonColor: new Color('black', 'white'),
+          buttonWavesLight: false,
+          buttonContainerUpRender: true,
+          buttonContainerUpHide: false
+        });
+      }
+      else
+      {
+        this.setState({
+          ...this.state,
+          contentAnimation: 'fadeOut',
+        });
+      }
     }
   }
 
@@ -201,10 +239,23 @@ export default class App extends React.Component<{}, AppState>
     const { page, contentAnimation } = this.state;
     if (contentAnimation === 'fadeOut')
     {
+      let newPage = page;
+      if (this._buttonClicked == 1)
+      {
+        if (page > 1)
+          newPage = page - 1;
+      }
+      else
+      {
+        if (page < STORY_CONTENTS.length + 2)
+          newPage = page + 1;
+      }
       this.setState({
         ...this.state,
-        page: this._buttonClicked == 1 ? page - 1 : page + 1,
-        contentAnimation: 'fadeIn',
+        page: newPage,
+        contentAnimation: page > 2 ? 'fadeIn faster' : 'fadeIn',
+        buttonContainerUpShow: newPage != 1,
+        contentEndUpdated: true
       });
       this._buttonClicked = -1;
     }

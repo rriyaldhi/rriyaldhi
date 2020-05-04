@@ -18,10 +18,8 @@ html, body
 
 *:focus
   outline: none
-
 .meta-description
   display: none
-
 canvas
   width: 100%
   left: 0
@@ -50,12 +48,18 @@ canvas
   z-index: 1000
 
 .contact
-  margin-top: 250px
   text-align: center
   font-size: 16pt
 
 .contact > .content
   margin-top: 25px
+.story
+  text-align: center
+  margin-top: 30vh
+  letter-spacing: 5px
+
+.story > .caption
+  margin-top: 15px
 
 @media (min-width: 1024px)
   canvas
@@ -63,18 +67,25 @@ canvas
     height: 50vh
 
   .contact
+    margin-top: 275px
     font-size: 16pt
     letter-spacing: 15px
 
+  .story
+    font-size: 18pt
 
 @media (min-width: 720px) and (max-width: 1023px)
   canvas
-    top: 25vh
-    height: 40vh
+    top: 20vh
+    height: 50vh
 
   .contact
+    margin-top: 225px
     font-size: 12pt
     letter-spacing: 10px
+
+  .story
+    font-size: 14pt
 
 @media (max-width: 719px)
   canvas
@@ -82,5 +93,9 @@ canvas
     height: 40vh
 
   .contact
+    margin-top: 200px
     font-size: 10pt
     letter-spacing: 5px
+
+  .story
+    font-size: 12 pt

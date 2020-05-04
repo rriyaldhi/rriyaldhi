@@ -57,4 +57,9 @@ describe('Text', () =>
     text.onScreenSizeUpdate(1280);
     expect(text.initiate).toHaveBeenCalledTimes(1);
   });
+
+  it ('should be able to run interpolation done callback', () =>
+  {
+    text['_interpolationDoneCallback']();
+  });
 });

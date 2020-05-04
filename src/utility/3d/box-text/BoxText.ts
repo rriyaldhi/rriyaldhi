@@ -23,6 +23,7 @@ import Point from "../../point/Point";
 import TextureDecorator from "../texture-decorator/TextureDecorator";
 import MaterialFactory from "../material-factory/MaterialFactory";
 import {ScreenSizeObserverInterface} from "../../screen-size-observer/ScreenSizeObserver";
+import {boundMethod} from "autobind-decorator";
 
 export class BoxText implements ScreenSizeObserverInterface
 {
@@ -239,10 +240,7 @@ export class BoxText implements ScreenSizeObserverInterface
       ANIMATION_HOVER_DURATION,
       null,
       true,
-      () =>
-      {
-        this._animationEndCallback();
-      }
+      this._interpolationDoneCallback
     );
     boxMesh.actionManager.registerAction(pointerOverAction);
 
@@ -254,10 +252,7 @@ export class BoxText implements ScreenSizeObserverInterface
       ANIMATION_HOVER_DURATION,
       null,
       true,
-      () =>
-      {
-        this._animationEndCallback();
-      }
+      this._interpolationDoneCallback
     );
     boxMesh.actionManager.registerAction(pointerOutAction);
   }
@@ -272,5 +267,14 @@ export class BoxText implements ScreenSizeObserverInterface
   public onScreenSizeUpdate(screenSize: number): void
   {
     this.initiate(screenSize);
+  }
+
+  @boundMethod
+  private _interpolationDoneCallback(): void
+  {
+    if (this._animationEndCallback)
+    {
+      this._animationEndCallback();
+    }
   }
 }

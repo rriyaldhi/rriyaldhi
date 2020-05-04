@@ -20,7 +20,8 @@ export interface AppState
   buttonContainerUpRender: boolean,
   buttonContainerDownRender: boolean,
   buttonContainerUpShow: boolean,
-  buttonContainerDownShow: boolean
+  buttonContainerDownShow: boolean,
+  loading: boolean
 }
 
 export default class App extends React.Component<{}, AppState>
@@ -50,7 +51,8 @@ export default class App extends React.Component<{}, AppState>
       buttonContainerUpRender: false,
       buttonContainerDownRender: true,
       buttonContainerUpShow: true,
-      buttonContainerDownShow: true
+      buttonContainerDownShow: true,
+      loading: false
     }
   }
 
@@ -174,38 +176,43 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _buttonUpClickCallback(): void
   {
-    const { page, buttonContainerUpShow, buttonContainerDownShow } = this.state;
-    this._buttonClicked = 1;
-    if (page > 1)
+    const { page, buttonContainerUpShow, buttonContainerDownShow, loading } = this.state;
+    const mobile = this._getMobile();
+    if (!loading || mobile)
     {
-      const mobile = this._getMobile();
-      const newPage = this._getNewPage();
-      if (page == 2)
+      this._buttonClicked = 1;
+      if (page > 1)
       {
-        this.setState({
-          ...this.state,
-          contentAnimation: 'fadeOut',
-          buttonColor: new Color('white', 'black'),
-          buttonWavesLight: false,
-          buttonContainerDownRender: true,
+        const newPage = this._getNewPage();
+        if (page == 2)
+        {
+          this.setState({
+            ...this.state,
+            contentAnimation: 'fadeOut',
+            buttonColor: new Color('white', 'black'),
+            buttonWavesLight: false,
+            buttonContainerDownRender: true,
+            loading: !mobile,
 
-          page: mobile ? newPage : page,
-          buttonContainerUpShow: mobile ? newPage != 1 : buttonContainerUpShow,
-          buttonContainerDownShow: mobile ? newPage < STORY_CONTENTS.length + 2 : buttonContainerDownShow
-        });
-      }
-      else
-      {
-        this.setState({
-          ...this.state,
-          contentAnimation: 'fadeOut',
-          buttonContainerDownRender: true,
+            page: mobile ? newPage : page,
+            buttonContainerUpShow: mobile ? newPage != 1 : buttonContainerUpShow,
+            buttonContainerDownShow: mobile ? newPage < STORY_CONTENTS.length + 2 : buttonContainerDownShow
+          });
+        }
+        else
+        {
+          this.setState({
+            ...this.state,
+            contentAnimation: 'fadeOut',
+            buttonContainerDownRender: true,
+            loading: !mobile,
 
-          page: mobile ? newPage : page,
-          buttonContainerUpShow: mobile ? newPage != 1 : buttonContainerUpShow,
-          buttonContainerDownShow: mobile ? newPage < STORY_CONTENTS.length + 2 : buttonContainerDownShow
+            page: mobile ? newPage : page,
+            buttonContainerUpShow: mobile ? newPage != 1 : buttonContainerUpShow,
+            buttonContainerDownShow: mobile ? newPage < STORY_CONTENTS.length + 2 : buttonContainerDownShow
 
-        });
+          });
+        }
       }
     }
   }
@@ -213,36 +220,42 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _buttonDownClickCallback(): void
   {
-    const { page, buttonContainerUpShow, buttonContainerDownShow } = this.state;
-    this._buttonClicked = 2;
-    if ((page < STORY_CONTENTS.length + 2))
+    const { page, buttonContainerUpShow, buttonContainerDownShow, loading } = this.state;
+    const mobile = this._getMobile();
+    if (!loading || mobile)
     {
-      const mobile = this._getMobile();
-      const newPage = this._getNewPage();
-      if (page == 1)
+      this._buttonClicked = 2;
+      if ((page < STORY_CONTENTS.length + 2))
       {
-        this.setState({
-          ...this.state,
-          contentAnimation: 'fadeOut',
-          buttonColor: new Color('black', 'white'),
-          buttonWavesLight: false,
-          buttonContainerUpRender: true,
+        const newPage = this._getNewPage();
+        if (page == 1)
+        {
+          this.setState({
+            ...this.state,
+            contentAnimation: 'fadeOut',
+            buttonColor: new Color('black', 'white'),
+            buttonWavesLight: false,
+            buttonContainerUpRender: true,
+            loading: !mobile,
 
-          page: mobile ? newPage : page,
-          buttonContainerUpShow: mobile ? newPage != 1 : buttonContainerUpShow,
-          buttonContainerDownShow: mobile ? newPage < STORY_CONTENTS.length + 2 : buttonContainerDownShow
-        });
-      }
-      else
-      {
-        this.setState({
-          ...this.state,
-          contentAnimation: 'fadeOut',
+            page: mobile ? newPage : page,
+            buttonContainerUpShow: mobile ? newPage != 1 : buttonContainerUpShow,
+            buttonContainerDownShow: mobile ? newPage < STORY_CONTENTS.length + 2 : buttonContainerDownShow
+          });
+        }
+        else
+        {
+          this.setState({
+            ...this.state,
+            contentAnimation: 'fadeOut',
+            buttonContainerUpRender: true,
+            loading: !mobile,
 
-          page: mobile ? newPage : page,
-          buttonContainerUpShow: mobile ? newPage != 1 : buttonContainerUpShow,
-          buttonContainerDownShow: mobile ? newPage < STORY_CONTENTS.length + 2 : buttonContainerDownShow
-        });
+            page: mobile ? newPage : page,
+            buttonContainerUpShow: mobile ? newPage != 1 : buttonContainerUpShow,
+            buttonContainerDownShow: mobile ? newPage < STORY_CONTENTS.length + 2 : buttonContainerDownShow
+          });
+        }
       }
     }
   }
@@ -272,7 +285,8 @@ export default class App extends React.Component<{}, AppState>
           page: newPage,
           contentAnimation: page > 2 ? 'fadeIn faster' : 'fadeIn',
           buttonContainerUpShow: newPage != 1,
-          buttonContainerDownShow: newPage < STORY_CONTENTS.length + 2
+          buttonContainerDownShow: newPage < STORY_CONTENTS.length + 2,
+          loading: false,
         });
         this._buttonClicked = -1;
       }
@@ -282,8 +296,9 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _buttonContainerUpAnimationEndCallback()
   {
+    const { loading } = this.state;
     const mobile = this._getMobile();
-    if (!mobile)
+    if (!mobile  && !loading)
     {
       const {buttonContainerUpShow} = this.state;
       if (!buttonContainerUpShow)
@@ -291,7 +306,13 @@ export default class App extends React.Component<{}, AppState>
         this.setState({
           ...this.state,
           buttonContainerUpRender: false,
-          buttonContainerUpShow: true
+          buttonContainerUpShow: true,
+        })
+      }
+      else
+      {
+        this.setState({
+          ...this.state,
         })
       }
     }
@@ -300,8 +321,9 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _buttonContainerDownAnimationEndCallback()
   {
+    const { loading } = this.state;
     const mobile = this._getMobile();
-    if (!mobile)
+    if (!mobile && !loading)
     {
       const {buttonContainerDownShow} = this.state;
       if (!buttonContainerDownShow)
@@ -309,7 +331,13 @@ export default class App extends React.Component<{}, AppState>
         this.setState({
           ...this.state,
           buttonContainerDownRender: false,
-          buttonContainerDownShow: true
+          buttonContainerDownShow: true,
+        })
+      }
+      else
+      {
+        this.setState({
+          ...this.state,
         })
       }
     }

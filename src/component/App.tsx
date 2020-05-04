@@ -14,8 +14,9 @@ export interface AppState
 {
   page: number,
   animationRun: boolean,
-  contentClasses: Array<string>,
-  buttonColor: Color
+  contentAnimation: string,
+  buttonColor: Color,
+  buttonWavesLight: boolean,
 }
 
 export default class App extends React.Component<{}, AppState>
@@ -23,6 +24,7 @@ export default class App extends React.Component<{}, AppState>
   private _engine: Engine;
   private _scene: Scene;
   private _boxText: BoxText;
+  private _buttonClicked: number;
   private readonly _screenSizeObserver: ScreenSizeObserver;
   private readonly _content: any;
   private readonly _titleCanvas: any;
@@ -37,12 +39,14 @@ export default class App extends React.Component<{}, AppState>
     this._titleCanvas = React.createRef();
     this._emailCanvas = React.createRef();
     this._linkedInCanvas = React.createRef();
+    this._buttonClicked = -1;
     this.state =
     {
       page: 1,
       animationRun: false,
-      contentClasses: [],
-      buttonColor: new Color('white', 'black')
+      contentAnimation: '',
+      buttonColor: new Color('white', 'black'),
+      buttonWavesLight: false
     }
   }
 
@@ -58,44 +62,42 @@ export default class App extends React.Component<{}, AppState>
 
   render()
   {
-    const { page, animationRun, contentClasses, buttonColor } = this.state;
-    const contentClass: string = contentClasses.join(' ');
-    const content = this._getContent();
+    const { page, animationRun, contentAnimation, buttonColor, buttonWavesLight } = this.state;
     return <div id={'app'}>
       <div
         id={'button-container-up'}
         className={`animated ${page === 2 ? 'fadeIn' : 'fadeOut'}`}
         style={{display: page === 2 ? 'block' : 'none'}}
       >
-        <Button color={buttonColor} wavesLight={true}>keyboard_arrow_up</Button>
+        <Button color={buttonColor} wavesLight={buttonWavesLight} clickCallback={this._buttonUpClickCallback}>
+          keyboard_arrow_up
+        </Button>
       </div>
       <span className={'meta-description'}>once upon a time in a small town...</span>
-      <div id={'content'} ref={this._content} className={contentClass}>
-        {content}
+      <div
+        id={'content'}
+        ref={this._content}
+        className={`animated ${contentAnimation}`}
+        onAnimationEnd={this._contentAnimationEndCallback}
+      >
+        <div style={{display: page === 1 ? 'block' : 'none'}}>
+          <canvas ref={this._titleCanvas} />
+        </div>
+        <div className={'contact'} style={{display: page === 2 ? 'block' : 'none'}}>
+          <div className={'content'}>rriyaldhi@gmail.com</div>
+          <div className={'content'}>linkedin.com/rriyaldhi</div>
+        </div>
       </div>
       <div
         id={'button-container-down'}
         className={`animated ${page === 1 && animationRun ? 'fadeIn' : 'fadeOut'}`}
         style={{display: animationRun ? 'block' : 'none'}}
       >
-        <Button color={buttonColor} wavesLight={true} clickCallback={this._buttonDownClickCallback}>keyboard_arrow_down</Button>
+        <Button color={buttonColor} wavesLight={buttonWavesLight} clickCallback={this._buttonDownClickCallback}>
+          keyboard_arrow_down
+        </Button>
       </div>
     </div>
-  }
-
-  private _getContent(): any
-  {
-    const { page } = this.state;
-    if (page === 1)
-    {
-      return <canvas ref={this._titleCanvas} />
-    }
-    else if (page === 2)
-    {
-      return <div>
-      </div>
-    }
-    return <div />
   }
 
   @boundMethod
@@ -147,13 +149,49 @@ export default class App extends React.Component<{}, AppState>
   }
 
   @boundMethod
+  private _buttonUpClickCallback(): void
+  {
+    const { page } = this.state;
+    this._buttonClicked = 1;
+    if (page == 2)
+    {
+      this.setState({
+        ...this.state,
+        contentAnimation: 'fadeOut',
+        buttonColor: new Color('white', 'black'),
+        buttonWavesLight: false
+      });
+    }
+    else
+    {
+      this.setState({
+        ...this.state,
+        contentAnimation: 'fadeOut',
+      });
+    }
+  }
+
+  @boundMethod
   private _buttonDownClickCallback(): void
   {
-    this.setState({
-      ...this.state,
-      page: 2,
-      contentClasses: ['animated', 'fadeOut']
-    });
+    const { page } = this.state;
+    this._buttonClicked = 2;
+    if (page == 1)
+    {
+      this.setState({
+        ...this.state,
+        contentAnimation: 'fadeOut',
+        buttonColor: new Color('black', 'white'),
+        buttonWavesLight: true
+      });
+    }
+    else
+    {
+      this.setState({
+        ...this.state,
+        contentAnimation: 'fadeOut',
+      });
+    }
   }
 
   @boundMethod
@@ -163,5 +201,20 @@ export default class App extends React.Component<{}, AppState>
       ...this.state,
       animationRun: true,
     });
+  }
+
+  @boundMethod
+  private _contentAnimationEndCallback(): void
+  {
+    const { page, contentAnimation } = this.state;
+    if (contentAnimation === 'fadeOut')
+    {
+      this.setState({
+        ...this.state,
+        page: this._buttonClicked == 1 ? page - 1 : page + 1,
+        contentAnimation: 'fadeIn',
+      });
+      this._buttonClicked = -1;
+    }
   }
 }

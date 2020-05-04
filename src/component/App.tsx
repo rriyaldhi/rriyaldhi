@@ -49,7 +49,7 @@ export default class App extends React.Component<{}, AppState>
   componentDidMount(): void
   {
     // @ts-ignore
-    document.fonts.load('10pt "san-francisco"').then(() =>
+    document.fonts.load('10pt "'+FONT_FAMILY+'"').then(() =>
     {
       this._initializeCanvas();
     });

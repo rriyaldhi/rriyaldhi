@@ -27,6 +27,7 @@ module.exports = {
     new JavaScriptObfuscator(),
     new CopyPlugin([
       { from: './src/resource/image/*.jpg', to: './resource/image', flatten: true},
+      { from: './src/resource/image/favicon.png', to: '.', flatten: true},
     ]),
   ],
 

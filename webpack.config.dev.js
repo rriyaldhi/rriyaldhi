@@ -34,6 +34,7 @@ module.exports = {
       { from: './node_modules/react/umd/react.development.js', to: '.' },
       { from: './node_modules/react-dom/umd/react-dom.development.js', to: '.' },
       { from: './src/resource/image/*.jpg', to: './resource/image', flatten: true},
+      { from: './src/resource/image/favicon.png', to: '.', flatten: true},
     ]),
   ],
 

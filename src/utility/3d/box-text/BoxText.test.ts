@@ -21,7 +21,11 @@ describe('Text', () =>
       1,
       color,
       'san-francisco',
-      'normal'
+      'normal',
+      () =>
+      {
+
+      }
     );
   });
 

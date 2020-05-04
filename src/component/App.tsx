@@ -62,6 +62,7 @@ export default class App extends React.Component<{}, AppState>
       this._initializeCanvas();
     });
     window.addEventListener("resize", this._onResize);
+    this._preloadImage();
   }
 
   render()
@@ -288,6 +289,15 @@ export default class App extends React.Component<{}, AppState>
         buttonContainerDownRender: false,
         buttonContainerDownShow: true
       })
+    }
+  }
+
+  @boundMethod
+  private _preloadImage()
+  {
+    for (var i = 0; i < STORY_CONTENTS.length; i++)
+    {
+      (new Image()).src = STORY_CONTENTS[i].image + '.jpg';
     }
   }
 

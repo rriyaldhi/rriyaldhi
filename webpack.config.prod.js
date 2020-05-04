@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const JavaScriptObfuscator = require('webpack-obfuscator');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: "production",
@@ -23,7 +24,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/index.ejs'
     }),
-    new JavaScriptObfuscator()
+    new JavaScriptObfuscator(),
+    new CopyPlugin([
+      { from: './src/resource/image/*.jpg', to: './resource/image', flatten: true},
+    ]),
   ],
 
   // optimization: {

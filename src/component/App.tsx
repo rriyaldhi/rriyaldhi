@@ -89,7 +89,7 @@ export default class App extends React.Component<{}, AppState>
       <span className={'meta-description'}>once upon a time in a small town...</span>
       <div
         ref={this._content}
-        className={`content animated ${contentAnimation}`}
+        className={`content ${window.innerWidth < 720 ? '' : 'animated'} ${contentAnimation}`}
         onAnimationEnd={this._contentAnimationEndCallback}
       >
         <canvas ref={this._titleCanvas} style={{visibility: page === 1 ? 'visible' : 'hidden'}} />

@@ -74,7 +74,7 @@ export default class App extends React.Component<{}, AppState>
     const windowWidth = window.innerWidth;
     if (windowWidth < 720)
     {
-      multiplier = 0.5;
+      multiplier = 0.7;
     }
 
     return <div id={'app'}>

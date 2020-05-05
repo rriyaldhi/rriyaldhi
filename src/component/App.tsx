@@ -97,7 +97,7 @@ export default class App extends React.Component<{}, AppState>
         <canvas ref={this._titleCanvas} style={{visibility: page === 1 ? 'visible' : 'hidden'}} />
         <div className={'contact'} style={{display: page === 2 ? 'block' : 'none'}}>
           <div className={'content'}>rriyaldhi@gmail.com</div>
-          <div className={'content'}>linkedin.com/rriyaldhi</div>
+          <div className={'content'}>linkedin.com/in/rriyaldhi</div>
         </div>
         {
           page > 2 && <div className={'story'} style={{display: page > 2 ? 'block' : 'none'}}>

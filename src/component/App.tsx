@@ -374,11 +374,8 @@ export default class App extends React.Component<{}, AppState>
   private _getMobile()
   {
     const width = window.innerWidth;
-    if (width < 720)
-    {
-      return true;
-    }
-    return false;
+    return width < 720;
+
   }
 
 }

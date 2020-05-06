@@ -465,17 +465,23 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _onWindowFocus(): void
   {
-    this._engine.stopRenderLoop();
-    this._engine.runRenderLoop(() =>
+    if (this._engine)
     {
-      this._renderCanvas();
-    });
+      this._engine.stopRenderLoop();
+      this._engine.runRenderLoop(() =>
+      {
+        this._renderCanvas();
+      });
+    }
   }
 
   @boundMethod
   private _onWindowLeave(): void
   {
-    this._engine.stopRenderLoop();
+    if (this._engine)
+    {
+      this._engine.stopRenderLoop();
+    }
   }
 
 }

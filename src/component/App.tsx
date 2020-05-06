@@ -44,7 +44,7 @@ export default class App extends React.Component<{}, AppState>
     this._content = React.createRef();
     this._titleCanvas = React.createRef();
     this._buttonClicked = -1;
-    this._canvasActive = false;
+    this._canvasActive = true;
     this._animationRunning = 0;
     this._currentMobile = this._getMobile();
     this.state =
@@ -145,7 +145,7 @@ export default class App extends React.Component<{}, AppState>
     if (this._currentMobile != this._getMobile())
     {
       this._buttonClicked = -1;
-      this._canvasActive = false;
+      this._canvasActive = true;
       this._animationRunning = 0;
       this._currentMobile = this._getMobile();
       this._initializeCanvas();
@@ -209,7 +209,6 @@ export default class App extends React.Component<{}, AppState>
     );
     this._boxText.initiate(window.innerWidth);
     this._screenSizeObserver.attach(this._boxText);
-    this._engine.stopRenderLoop();
     this._engine.runRenderLoop(() =>
     {
       this._renderCanvas();
@@ -340,7 +339,10 @@ export default class App extends React.Component<{}, AppState>
       {
         if (!this._canvasActive)
         {
-          this._engine.stopRenderLoop();
+          if (this._engine)
+          {
+            this._engine.stopRenderLoop();
+          }
         }
       }
     }
@@ -362,7 +364,10 @@ export default class App extends React.Component<{}, AppState>
       {
         if (!this._canvasActive)
         {
-          this._engine.stopRenderLoop();
+          if (this._engine)
+          {
+            this._engine.stopRenderLoop();
+          }
         }
       }
     }
@@ -482,11 +487,14 @@ export default class App extends React.Component<{}, AppState>
   private _canvasMouseEnterCallback(): void
   {
     this._canvasActive = true;
-    this._engine.stopRenderLoop();
-    this._engine.runRenderLoop(() =>
+    if (this._engine)
     {
-      this._renderCanvas();
-    });
+      this._engine.stopRenderLoop();
+      this._engine.runRenderLoop(() =>
+      {
+        this._renderCanvas();
+      });
+    }
   }
 
   @boundMethod
@@ -495,7 +503,10 @@ export default class App extends React.Component<{}, AppState>
     this._canvasActive = false;
     if (this._animationRunning == 0)
     {
-      this._engine.stopRenderLoop();
+      if (this._engine)
+      {
+        this._engine.stopRenderLoop();
+      }
     }
   }
 

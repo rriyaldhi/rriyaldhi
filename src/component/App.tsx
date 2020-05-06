@@ -68,6 +68,7 @@ export default class App extends React.Component<{}, AppState>
       this._initializeCanvas();
     });
     window.addEventListener("resize", this._onResize);
+    window.addEventListener("blur", this._onWindowLeave);
     this._preloadImage();
   }
 
@@ -434,7 +435,7 @@ export default class App extends React.Component<{}, AppState>
   }
 
   @boundMethod
-  private _canvasMouseEnterCallback()
+  private _canvasMouseEnterCallback(): void
   {
     if (!this._getMobile())
     {
@@ -448,7 +449,7 @@ export default class App extends React.Component<{}, AppState>
   }
 
   @boundMethod
-  private _canvasMouseLeaveCallback()
+  private _canvasMouseLeaveCallback(): void
   {
     if (!this._getMobile())
     {
@@ -458,6 +459,12 @@ export default class App extends React.Component<{}, AppState>
         this._engine.stopRenderLoop();
       }
     }
+  }
+
+  @boundMethod
+  private _onWindowLeave(): void
+  {
+    this._engine.stopRenderLoop();
   }
 
 }

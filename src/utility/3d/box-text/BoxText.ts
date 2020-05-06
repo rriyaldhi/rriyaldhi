@@ -33,10 +33,19 @@ export class BoxText implements ScreenSizeObserverInterface
   private readonly _color: Color;
   private readonly _fontFamily: string;
   private readonly _fontType: string;
+  private readonly _animationStartCallback: any;
   private readonly _animationEndCallback: any;
   private _boxMeshes: Mesh[];
 
-  constructor(scene: Scene, text: string, size: number, color: Color, fontFamily: string, fontType: string, animationEndCallback: any)
+  constructor(
+    scene: Scene,
+    text: string,
+    size: number,
+    color: Color,
+    fontFamily: string,
+    fontType: string,
+    animationStartCallback: any,
+    animationEndCallback: any)
   {
     this._scene = scene;
     this._boxMeshes = [];
@@ -45,6 +54,7 @@ export class BoxText implements ScreenSizeObserverInterface
     this._color = color;
     this._fontFamily = fontFamily;
     this._fontType = fontType;
+    this._animationStartCallback = animationStartCallback;
     this._animationEndCallback = animationEndCallback;
   }
 
@@ -240,8 +250,9 @@ export class BoxText implements ScreenSizeObserverInterface
       ANIMATION_HOVER_DURATION,
       null,
       true,
-      this._interpolationDoneCallback
+      // this._interpolationDoneCallback
     );
+    pointerOverAction.onBeforeExecuteObservable.add(this._animationStartCallback);
     boxMesh.actionManager.registerAction(pointerOverAction);
 
     const pointerOutAction: InterpolateValueAction = new InterpolateValueAction(
@@ -277,4 +288,5 @@ export class BoxText implements ScreenSizeObserverInterface
       this._animationEndCallback();
     }
   }
+
 }

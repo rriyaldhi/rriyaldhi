@@ -68,6 +68,7 @@ export default class App extends React.Component<{}, AppState>
       this._initializeCanvas();
     });
     window.addEventListener("resize", this._onResize);
+    window.addEventListener("focus", this._onWindowFocus);
     window.addEventListener("blur", this._onWindowLeave);
     this._preloadImage();
   }
@@ -459,6 +460,16 @@ export default class App extends React.Component<{}, AppState>
         this._engine.stopRenderLoop();
       }
     }
+  }
+
+  @boundMethod
+  private _onWindowFocus(): void
+  {
+    this._engine.stopRenderLoop();
+    this._engine.runRenderLoop(() =>
+    {
+      this._renderCanvas();
+    });
   }
 
   @boundMethod

@@ -88,17 +88,19 @@ export default class App extends React.Component<{}, AppState>
           </Button>
         </div>
       }
-      <span className={'meta-description'}>once upon a time in a small town...</span>
+      <span className={'meta-description'}>once upon a time in a small town ...</span>
       <div
         ref={this._content}
         className={`content ${window.innerWidth < 720 ? '' : 'animated'} ${contentAnimation}`}
         onAnimationEnd={this._contentAnimationEndCallback}
       >
         <canvas ref={this._titleCanvas} style={{visibility: page === 1 ? 'visible' : 'hidden'}} />
-        <div className={'contact'} style={{display: page === 2 ? 'block' : 'none'}}>
-          <div className={'content'}>rriyaldhi@gmail.com</div>
-          <div className={'content'}>linkedin.com/in/rriyaldhi</div>
-        </div>
+        {
+          page === 2 && <div className={'contact'}>
+            <div className={'content'}>rriyaldhi@gmail.com</div>
+            <div className={'content'}>linkedin.com/in/rriyaldhi</div>
+          </div>
+        }
         {
           page > 2 && <div className={'story'} style={{display: page > 2 ? 'block' : 'none'}}>
             <div className={'image'}>

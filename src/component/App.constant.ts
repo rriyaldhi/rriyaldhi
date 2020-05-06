@@ -8,7 +8,7 @@ export const STORY_CONTENTS: Array<any> =
     {
       image: 'resource/image/small town',
       width: 450,
-      caption: 'once upon a time...'
+      caption: 'once upon a time ...'
     },
     {
       image: 'resource/image/baby',
@@ -23,7 +23,7 @@ export const STORY_CONTENTS: Array<any> =
     {
       image: 'resource/image/calendar',
       width: 150,
-      caption: 'after a few years...'
+      caption: 'after a few years ...'
     },
     {
       image: 'resource/image/school',
@@ -33,7 +33,7 @@ export const STORY_CONTENTS: Array<any> =
     {
       image: 'resource/image/realize',
       width: 175,
-      caption: 'where he found out...'
+      caption: 'where he found out ...'
     },
     {
       image: 'resource/image/football',
@@ -63,7 +63,7 @@ export const STORY_CONTENTS: Array<any> =
     {
       image: 'resource/image/graduation',
       width: 100,
-      caption: 'so, after graduated from high school...'
+      caption: 'so, after graduated from high school ...'
     },
     {
       image: 'resource/image/study',
@@ -73,7 +73,7 @@ export const STORY_CONTENTS: Array<any> =
     {
       image: 'resource/image/reading',
       width: 250,
-      caption: 'during his study...'
+      caption: 'during his study ...'
     },
     {
       image: 'resource/image/working 2',
@@ -120,7 +120,7 @@ export const STORY_CONTENTS: Array<any> =
   {
     image: 'resource/image/working 3',
     width: 250,
-    caption: 'after several years working...'
+    caption: 'after several years working ...'
   },
   {
     image: 'resource/image/realize 2',

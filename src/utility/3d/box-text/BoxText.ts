@@ -34,6 +34,7 @@ export class BoxText implements ScreenSizeObserverInterface
   private readonly _fontFamily: string;
   private readonly _fontType: string;
   private readonly _animationStartCallback: any;
+  private readonly _animationHalfEndCallback: any;
   private readonly _animationEndCallback: any;
   private _boxMeshes: Mesh[];
 
@@ -45,6 +46,7 @@ export class BoxText implements ScreenSizeObserverInterface
     fontFamily: string,
     fontType: string,
     animationStartCallback: any,
+    animationHalfEndCallback: any,
     animationEndCallback: any)
   {
     this._scene = scene;
@@ -55,6 +57,7 @@ export class BoxText implements ScreenSizeObserverInterface
     this._fontFamily = fontFamily;
     this._fontType = fontType;
     this._animationStartCallback = animationStartCallback;
+    this._animationHalfEndCallback = animationHalfEndCallback;
     this._animationEndCallback = animationEndCallback;
   }
 
@@ -250,7 +253,7 @@ export class BoxText implements ScreenSizeObserverInterface
       ANIMATION_HOVER_DURATION,
       null,
       true,
-      // this._interpolationDoneCallback
+      this._animationHalfEndCallback
     );
     pointerOverAction.onBeforeExecuteObservable.add(this._animationStartCallback);
     boxMesh.actionManager.registerAction(pointerOverAction);

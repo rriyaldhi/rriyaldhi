@@ -32,6 +32,7 @@ export default class App extends React.Component<{}, AppState>
   private _buttonClicked: number;
   private _canvasActive: boolean;
   private _animationRunning: number;
+  private _currentMobile: boolean;
   private readonly _screenSizeObserver: ScreenSizeObserver;
   private readonly _content: React.RefObject<any>;
   private readonly _titleCanvas: React.RefObject<any>;
@@ -45,6 +46,7 @@ export default class App extends React.Component<{}, AppState>
     this._buttonClicked = -1;
     this._canvasActive = false;
     this._animationRunning = 0;
+    this._currentMobile = this._getMobile();
     this.state =
     {
       page: 1,
@@ -140,14 +142,39 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _onResize(): void
   {
-    this._titleCanvas.current.width = 0.8 * window.innerWidth;
-    this._engine.resize();
-    this._screenSizeObserver.notify(window.innerWidth);
-    this._engine.stopRenderLoop();
-    this._engine.runRenderLoop(() =>
+    if (this._currentMobile != this._getMobile())
     {
-      this._renderCanvas();
-    });
+      this._buttonClicked = -1;
+      this._canvasActive = false;
+      this._animationRunning = 0;
+      this._currentMobile = this._getMobile();
+      this._initializeCanvas();
+      this.setState(
+        {
+          page: 1,
+          animationRun: false,
+          contentAnimation: '',
+          buttonColor: new Color('white', 'black'),
+          buttonWavesLight: true,
+          buttonContainerUpRender: false,
+          buttonContainerDownRender: true,
+          buttonContainerUpShow: true,
+          buttonContainerDownShow: true,
+          loading: false
+        }
+      );
+    }
+    else
+    {
+      this._titleCanvas.current.width = window.innerWidth;
+      this._engine.resize();
+      this._screenSizeObserver.notify(window.innerWidth);
+      this._engine.stopRenderLoop();
+      this._engine.runRenderLoop(() =>
+      {
+        this._renderCanvas();
+      });
+    }
   }
 
   @boundMethod
@@ -173,6 +200,7 @@ export default class App extends React.Component<{}, AppState>
       FONT_FAMILY,
       FONT_TYPE,
       this._boxAnimationStartCallback,
+      this._boxAnimationHalfEndCallback,
       this._boxAnimationEndCallback
     );
     this._boxText.initiate(window.innerWidth);
@@ -200,8 +228,10 @@ export default class App extends React.Component<{}, AppState>
     const mobile = this._getMobile();
     if (!loading || mobile)
     {
-      if (mobile)
+      this._buttonClicked = 1;
+      if (page > 1)
       {
+        const newPage = this._getNewPage();
         if (page == 2)
         {
           this._engine.stopRenderLoop();
@@ -209,14 +239,6 @@ export default class App extends React.Component<{}, AppState>
           {
             this._renderCanvas();
           });
-        }
-      }
-      this._buttonClicked = 1;
-      if (page > 1)
-      {
-        const newPage = this._getNewPage();
-        if (page == 2)
-        {
           this.setState({
             ...this.state,
             contentAnimation: 'fadeOut',
@@ -255,19 +277,13 @@ export default class App extends React.Component<{}, AppState>
     const mobile = this._getMobile();
     if (!loading || mobile)
     {
-      if (mobile)
-      {
-        if (page == 1)
-        {
-          this._engine.stopRenderLoop();
-        }
-      }
       this._buttonClicked = 2;
       if ((page < STORY_CONTENTS.length + 2))
       {
         const newPage = this._getNewPage();
         if (page == 1)
         {
+          this._engine.stopRenderLoop();
           this.setState({
             ...this.state,
             contentAnimation: 'fadeOut',
@@ -305,16 +321,39 @@ export default class App extends React.Component<{}, AppState>
   }
 
   @boundMethod
+  private _boxAnimationHalfEndCallback(): void
+  {
+    if (this._getMobile())
+    {
+      this.setState({
+        ...this.state,
+        animationRun: true,
+        buttonContainerDownShow: true
+      });
+      if (this._animationRunning > 0)
+        this._animationRunning--;
+      if (this._animationRunning == 0)
+      {
+        if (!this._canvasActive)
+        {
+          this._engine.stopRenderLoop();
+        }
+      }
+    }
+  }
+
+  @boundMethod
   private _boxAnimationEndCallback(): void
   {
-    this.setState({
-      ...this.state,
-      animationRun: true,
-      buttonContainerDownShow: true
-    });
-    this._animationRunning--;
     if (!this._getMobile())
     {
+      this.setState({
+        ...this.state,
+        animationRun: true,
+        buttonContainerDownShow: true
+      });
+      if (this._animationRunning > 0)
+        this._animationRunning--;
       if (this._animationRunning == 0)
       {
         if (!this._canvasActive)
@@ -438,27 +477,21 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _canvasMouseEnterCallback(): void
   {
-    if (!this._getMobile())
+    this._canvasActive = true;
+    this._engine.stopRenderLoop();
+    this._engine.runRenderLoop(() =>
     {
-      this._canvasActive = true;
-      this._engine.stopRenderLoop();
-      this._engine.runRenderLoop(() =>
-      {
-        this._renderCanvas();
-      });
-    }
+      this._renderCanvas();
+    });
   }
 
   @boundMethod
   private _canvasMouseLeaveCallback(): void
   {
-    if (!this._getMobile())
+    this._canvasActive = false;
+    if (this._animationRunning == 0)
     {
-      this._canvasActive = false;
-      if (this._animationRunning == 0)
-      {
-        this._engine.stopRenderLoop();
-      }
+      this._engine.stopRenderLoop();
     }
   }
 

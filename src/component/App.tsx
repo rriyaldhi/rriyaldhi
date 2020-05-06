@@ -88,6 +88,7 @@ export default class App extends React.Component<{}, AppState>
           </Button>
         </div>
       }
+      <span className={'meta-description'}>once upon a time in a small town...</span>
       <div
         ref={this._content}
         className={`content ${window.innerWidth < 720 ? '' : 'animated'} ${contentAnimation}`}

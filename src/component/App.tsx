@@ -180,6 +180,10 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _initializeCanvas(): void
   {
+    if (this._engine)
+    {
+      this._engine.stopRenderLoop();
+    }
     this._engine = new Engine
     (
       this._titleCanvas.current,

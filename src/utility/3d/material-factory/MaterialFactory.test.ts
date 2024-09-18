@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import EngineParametricSingleton from '../engine-singleton/EngineSingleton';
 import SceneParametricSingleton from '../scene-singleton/SceneSingleton';
 import {Color3, DynamicTexture, Engine, Scene, StandardMaterial} from 'babylonjs';

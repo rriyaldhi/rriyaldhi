@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import * as React from "react";
 import EngineSingleton from "./EngineSingleton";
 import {Engine} from "babylonjs/Engines/engine";

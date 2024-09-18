@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import SceneSingleton from './SceneSingleton';
 import EngineSingleton from '../engine-singleton/EngineSingleton';
 import {Engine, Scene} from 'babylonjs';

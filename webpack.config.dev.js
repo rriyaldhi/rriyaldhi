@@ -30,12 +30,20 @@ module.exports = {
         },
       template: './src/index.ejs',
     }),
-    new CopyPlugin([
-      { from: './node_modules/react/umd/react.development.js', to: '.' },
-      { from: './node_modules/react-dom/umd/react-dom.development.js', to: '.' },
-      { from: './src/resource/image/*.jpg', to: './resource/image', flatten: true},
-      { from: './src/resource/image/favicon.png', to: '.', flatten: true},
-    ]),
+    new CopyPlugin({
+      patterns: [
+        { from: './node_modules/react/umd/react.development.js', to: '.' },
+        { from: './node_modules/react-dom/umd/react-dom.development.js', to: '.' },
+        {
+          from: './src/resource/image/*.jpg',
+          to: './resource/image/[name][ext]',
+        },
+        {
+          from: './src/resource/image/favicon.png',
+          to: './[name][ext]',
+        },
+      ],
+    }),
   ],
 
   module: {

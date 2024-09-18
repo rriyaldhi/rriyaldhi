@@ -2,13 +2,14 @@ import * as React from "react";
 import './Button.sass'
 import Color from "../../utility/color/Color";
 import {boundMethod} from "autobind-decorator";
+import {ReactNode} from "react";
 
 export interface ButtonProp
 {
   color?: Color,
   wavesLight?: boolean,
   clickCallback?: Function,
-  children?: Node | string
+  children?: ReactNode
 }
 
 export default class Button extends React.Component<ButtonProp, {}>

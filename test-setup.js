@@ -1,4 +1,5 @@
-const enzyme = require("enzyme");
-const Adapter = require("enzyme-adapter-react-16");
+const config = {
+	verbose: true,
+};
 
-enzyme.configure({ adapter: new Adapter() });
+module.exports = config;

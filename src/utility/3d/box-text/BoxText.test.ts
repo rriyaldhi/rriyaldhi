@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import {Engine} from 'babylonjs';
 import {Scene} from 'babylonjs/scene';
 import {BoxText} from "./BoxText";
@@ -61,7 +65,7 @@ describe('Text', () =>
 
   it('should be re-initiated when screen size changes', () =>
   {
-    spyOn(text, 'initiate');
+    jest.spyOn(text, 'initiate');
     text.onScreenSizeUpdate(1280);
     expect(text.initiate).toHaveBeenCalledTimes(1);
   });

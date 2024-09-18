@@ -16,7 +16,6 @@ module.exports = {
   entry: './src/index.tsx',
   output: {
     filename: '[name]-[chunkhash].js',
-    // chunkFilename: '[name]-[chunkhash].js'
   },
   plugins: [
     new webpack.ProgressPlugin(),
@@ -25,29 +24,20 @@ module.exports = {
       template: './src/index.ejs'
     }),
     new JavaScriptObfuscator(),
-    new CopyPlugin([
-      { from: './src/resource/image/*.jpg', to: './resource/image', flatten: true},
-      { from: './src/resource/image/favicon.png', to: '.', flatten: true},
-    ]),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: './src/resource/image/*.jpg',
+          to: './resource/image/[name][ext]', // Use [name][ext] to keep the original filenames
+        },
+        {
+          from: './src/resource/image/favicon.png',
+          to: './[name][ext]', // Copy favicon.png directly to the root
+        },
+      ],
+    }),
   ],
 
-  // optimization: {
-  //   runtimeChunk: 'single',
-  //   splitChunks: {
-  //     chunks: 'all',
-  //     maxInitialRequests: Infinity,
-  //     minSize: 0,
-  //     cacheGroups: {
-  //       vendor: {
-  //         test: /[\\/]node_modules[\\/]/,
-  //         name(module) {
-  //           const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-  //           return `npm.${packageName.replace('@', '')}`;
-  //         },
-  //       },
-  //     },
-  //   },
-  // },
   module: {
     rules: [
       {

@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import {DynamicTexture, Engine} from 'babylonjs';
 import {Scene} from 'babylonjs/scene';
 import TextureDecorator from "./TextureDecorator";
@@ -26,7 +30,7 @@ describe('TextureDecorator', () =>
   {
     const textureDecorator: TextureDecorator = new TextureDecorator(dynamicTexture);
     const texture: DynamicTexture = textureDecorator.dynamicTexture;
-    spyOn(texture, 'drawText');
+    jest.spyOn(texture, 'drawText');
     textureDecorator.drawText(
       'test',
       new Font(

@@ -100,7 +100,7 @@ export class BoxText implements ScreenSizeObserverInterface
   {
     const width: number = dynamicTexture.getSize().width;
     const height: number = dynamicTexture.getSize().height;
-    const textTextureContext: CanvasRenderingContext2D = dynamicTexture.getContext();
+    const textTextureContext: any = dynamicTexture.getContext();
 
     let size: string = (TEXTURE_SIZE * 0.5) + 'pt';
     let y: number = height - (height / 3);

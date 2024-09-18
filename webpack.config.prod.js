@@ -27,10 +27,6 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          from: './src/resource/image/*.jpg',
-          to: './resource/image/[name][ext]', // Use [name][ext] to keep the original filenames
-        },
-        {
           from: './src/resource/image/favicon.png',
           to: './[name][ext]', // Copy favicon.png directly to the root
         },

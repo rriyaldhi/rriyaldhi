@@ -1,5 +1,6 @@
-import { Engine, NullEngine } from 'babylonjs';
-import {Nullable} from "babylonjs/types";
+import { Engine } from '@babylonjs/core/Engines/engine.js';
+import { NullEngine } from '@babylonjs/core/Engines/nullEngine.js';
+import type { Nullable } from '@babylonjs/core/types.js';
 
 export default class EngineSingleton
 {

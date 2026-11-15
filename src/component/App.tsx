@@ -1,10 +1,13 @@
 import * as React from "react";
 import "./App.sass";
-import {Color4, Engine, Scene} from 'babylonjs';
+import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera.js';
+import { Engine } from '@babylonjs/core/Engines/engine.js';
+import { Color4 } from '@babylonjs/core/Maths/math.color.js';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector.js';
+import { Scene } from '@babylonjs/core/scene.js';
 import {ScreenSizeObserverSingleton} from "../utility/screen-size-observer/ScreenSizeObserverSingleton";
 import ScreenSizeObserver from "../utility/screen-size-observer/ScreenSizeObserver";
 import {BoxText} from "../utility/3d/box-text/BoxText";
-import {Vector3, FreeCamera} from "babylonjs";
 import {boundMethod} from 'autobind-decorator';
 import {BOX_COLOR, FONT_FAMILY, FONT_TYPE} from "./App.constant";
 
@@ -25,15 +28,12 @@ export default class App extends React.Component<{}, AppState>
   private _animationRunning: number;
   private _currentMobile: boolean;
   private readonly _screenSizeObserver: ScreenSizeObserver;
-  private readonly _content: React.RefObject<any>;
-  private readonly _titleCanvas: React.RefObject<any>;
+  private readonly _titleCanvas = React.createRef<HTMLCanvasElement>();
 
   constructor(props: any)
   {
     super(props);
     this._screenSizeObserver = ScreenSizeObserverSingleton.getInstance();
-    this._content = React.createRef();
-    this._titleCanvas = React.createRef();
     this._canvasActive = true;
     this._animationRunning = 0;
     this._currentMobile = this._getMobile();
@@ -48,7 +48,6 @@ export default class App extends React.Component<{}, AppState>
 
   componentDidMount(): void
   {
-    // @ts-ignore
     document.fonts.load('10pt "'+FONT_FAMILY+'"').then(() =>
     {
       this._initializeCanvas();
@@ -65,7 +64,6 @@ export default class App extends React.Component<{}, AppState>
     return <div id={'app'}>
       <span className={'meta-description'}>rizky riyaldhi</span>
       <div
-        ref={this._content}
         className={`content ${window.innerWidth < 720 ? '' : 'animated'} ${contentAnimation}`}
       >
         <canvas

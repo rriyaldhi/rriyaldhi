@@ -4,7 +4,8 @@
 
 import SceneSingleton from './SceneSingleton';
 import EngineSingleton from '../engine-singleton/EngineSingleton';
-import {Engine, Scene} from 'babylonjs';
+import type { Engine } from '@babylonjs/core/Engines/engine.js';
+import type { Scene } from '@babylonjs/core/scene.js';
 
 describe('SceneSingleton', () =>
 {

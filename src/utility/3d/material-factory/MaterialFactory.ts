@@ -1,4 +1,7 @@
-import {BaseTexture, Color3, Scene, StandardMaterial} from 'babylonjs';
+import type { BaseTexture } from '@babylonjs/core/Materials/Textures/baseTexture.js';
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.js';
+import type { Color3 } from '@babylonjs/core/Maths/math.color.js';
+import type { Scene } from '@babylonjs/core/scene.js';
 
 export default class MaterialFactory
 {

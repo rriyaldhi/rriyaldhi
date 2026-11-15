@@ -1,12 +1,16 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
+    "rootDir": "./src",
     "sourceMap": true,
     "skipLibCheck": true,
+    "strict": false,
     "noImplicitAny": true,
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "target": "es6",
-    "jsx": "react",
+    "jsx": "react-jsx",
+    "types": ["jest"],
     "esModuleInterop": true,
     "experimentalDecorators": true
   }

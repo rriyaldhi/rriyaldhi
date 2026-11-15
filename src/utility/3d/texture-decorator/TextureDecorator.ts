@@ -1,4 +1,4 @@
-import {DynamicTexture} from 'babylonjs';
+import type { DynamicTexture } from '@babylonjs/core/Materials/Textures/dynamicTexture.js';
 import Font from "../../font/Font";
 
 export default class TextureDecorator {

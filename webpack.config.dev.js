@@ -1,6 +1,4 @@
 const webpack = require('webpack');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -9,36 +7,20 @@ module.exports = {
   devtool: "source-map",
 
   resolve: {
-    extensions: [".ts", ".tsx", "js"]
+    extensions: [".ts", ".tsx", ".js"]
   },
 
   entry: './src/index.tsx',
   output: {
     path: __dirname + '/dist',
-    filename: 'main.js'
+    filename: 'main.js',
+    clean: true
   },
   plugins: [
     new webpack.ProgressPlugin(),
-    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      templateParameters:
-        {
-          urls: [
-            'react.development.js',
-            'react-dom.development.js'
-          ]
-        },
       template: './src/index.ejs',
-    }),
-    new CopyPlugin({
-      patterns: [
-        { from: './node_modules/react/umd/react.development.js', to: '.' },
-        { from: './node_modules/react-dom/umd/react-dom.development.js', to: '.' },
-        {
-          from: './src/resource/image/favicon.png',
-          to: './[name][ext]',
-        },
-      ],
+      favicon: './src/resource/image/favicon.png',
     }),
   ],
 
@@ -65,12 +47,8 @@ module.exports = {
     ]
   },
 
-  externals: {
-    "react": "React",
-    "react-dom": "ReactDOM"
-  },
-
   devServer: {
+    static: false,
     host: '0.0.0.0',
     port: 8000
   }

@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 
-import {Engine} from 'babylonjs';
-import {Scene} from 'babylonjs/scene';
+import type { Engine } from '@babylonjs/core/Engines/engine.js';
+import type { Scene } from '@babylonjs/core/scene.js';
 import {BoxText} from "./BoxText";
 import EngineSingleton from "../engine-singleton/EngineSingleton";
 import SceneSingleton from "../scene-singleton/SceneSingleton";

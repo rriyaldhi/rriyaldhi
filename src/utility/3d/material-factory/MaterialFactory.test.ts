@@ -4,7 +4,11 @@
 
 import EngineParametricSingleton from '../engine-singleton/EngineSingleton';
 import SceneParametricSingleton from '../scene-singleton/SceneSingleton';
-import {Color3, DynamicTexture, Engine, Scene, StandardMaterial} from 'babylonjs';
+import type { Engine } from '@babylonjs/core/Engines/engine.js';
+import { DynamicTexture } from '@babylonjs/core/Materials/Textures/dynamicTexture.js';
+import type { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.js';
+import { Color3 } from '@babylonjs/core/Maths/math.color.js';
+import type { Scene } from '@babylonjs/core/scene.js';
 import MaterialFactory from "./MaterialFactory";
 
 describe('MaterialFactory', () =>

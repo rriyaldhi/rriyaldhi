@@ -2,8 +2,9 @@
  * @jest-environment jsdom
  */
 
-import {DynamicTexture, Engine} from 'babylonjs';
-import {Scene} from 'babylonjs/scene';
+import type { Engine } from '@babylonjs/core/Engines/engine.js';
+import { DynamicTexture } from '@babylonjs/core/Materials/Textures/dynamicTexture.js';
+import type { Scene } from '@babylonjs/core/scene.js';
 import TextureDecorator from "./TextureDecorator";
 import Font from "../../font/Font";
 import Color from "../../color/Color";

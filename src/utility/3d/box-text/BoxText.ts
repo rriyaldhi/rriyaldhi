@@ -1,16 +1,16 @@
-import {
-  ActionManager,
-  Animation,
-  Color3,
-  DynamicTexture,
-  InterpolateValueAction,
-  Mesh,
-  MeshBuilder,
-  MultiMaterial,
-  Scene,
-  StandardMaterial,
-  SubMesh
-} from 'babylonjs';
+import { ActionManager } from '@babylonjs/core/Actions/actionManager.js';
+import { InterpolateValueAction } from '@babylonjs/core/Actions/interpolateValueAction.js';
+import '@babylonjs/core/Animations/animatable.js';
+import { Animation } from '@babylonjs/core/Animations/animation.js';
+import '@babylonjs/core/Culling/ray.js'; // Registers mesh picking for the pointer actions.
+import { DynamicTexture } from '@babylonjs/core/Materials/Textures/dynamicTexture.js';
+import { MultiMaterial } from '@babylonjs/core/Materials/multiMaterial.js';
+import type { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.js';
+import { Color3 } from '@babylonjs/core/Maths/math.color.js';
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js';
+import type { Mesh } from '@babylonjs/core/Meshes/mesh.js';
+import { SubMesh } from '@babylonjs/core/Meshes/subMesh.js';
+import type { Scene } from '@babylonjs/core/scene.js';
 import {
   ANIMATION_HOVER_DURATION,
   ANIMATION_PROPERTY,
@@ -187,7 +187,7 @@ export class BoxText implements ScreenSizeObserverInterface
         multiMaterial.subMaterials.push(materialBottom);
 
         const size: number = BoxText.getBoxSize(screenSize, this._size);
-        const boxMesh: Mesh = MeshBuilder.CreateBox(`mesh${i}`, BoxText.getBoxOption(size), this._scene);
+        const boxMesh: Mesh = CreateBox(`mesh${i}`, BoxText.getBoxOption(size), this._scene);
         boxMesh.position.x = (i * size) - ((this._text.length * size) / 2) + (size / 2);
         boxMesh.material = multiMaterial;
 
@@ -212,8 +212,8 @@ export class BoxText implements ScreenSizeObserverInterface
       'boxAnimation',
       'visibility',
       50,
-      BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+      Animation.ANIMATIONTYPE_FLOAT,
+      Animation.ANIMATIONLOOPMODE_CONSTANT
     );
 
     const keys: any[] = [];

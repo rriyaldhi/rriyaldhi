@@ -1,4 +1,6 @@
-import {Color4, Engine, Scene} from 'babylonjs';
+import type { Engine } from '@babylonjs/core/Engines/engine.js';
+import { Color4 } from '@babylonjs/core/Maths/math.color.js';
+import { Scene } from '@babylonjs/core/scene.js';
 
 export default class SceneSingleton
 {

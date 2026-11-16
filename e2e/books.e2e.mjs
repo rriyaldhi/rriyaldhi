@@ -88,6 +88,37 @@ test('keeps the reader inside a narrow viewport with reduced motion', async ({ p
   await expect(book).toBeHidden();
 });
 
+for (const [orientation, viewport] of [
+  ['portrait', { width: 375, height: 420 }],
+  ['landscape', { width: 667, height: 320 }],
+]) {
+  test.describe(`on a short mobile viewport in ${orientation}`, () => {
+    test.use({ viewport, isMobile: true, hasTouch: true });
+
+    for (const [title, secondPage] of [
+      ['Sapiens', 'Shared stories'],
+      ['How to Avoid a Climate Disaster', 'Beyond clean power'],
+      ['Inside of a Dog', 'Smelling the past'],
+    ]) {
+      test(`shows the start of page two of ${title} after tapping Next`, async ({ page }) => {
+        await page.goto('/');
+        await page.getByRole('button', { name: `Read ${title}` }).tap();
+        const book = page.getByRole('dialog', { name: title });
+        const controls = book.getByRole('group', { name: 'Book pages' });
+
+        await controls.getByRole('button', { name: 'Next page' }).tap();
+        await expect(controls.getByRole('status')).toHaveText('Page 2 of 3');
+        const heading = book.getByRole('heading', { name: secondPage });
+        await expect(heading).toBeInViewport({ ratio: 1 });
+        await expect.poll(async () => {
+          const bounds = await heading.boundingBox();
+          return bounds.y + bounds.height <= (await controls.boundingBox()).y;
+        }).toBe(true);
+      });
+    }
+  });
+}
+
 test('reads the climate book and keeps its page position separate from Sapiens', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -103,13 +134,14 @@ test('reads the climate book and keeps its page position separate from Sapiens',
   })).toBeGreaterThan(0);
 
   for (const heading of ['Why net zero?', 'Beyond clean power', 'The Green Premium']) {
-    await expectSingleLine(climateBook.getByRole('heading', { name: heading }));
+    const pageHeading = climateBook.getByRole('heading', { name: heading });
+    await expectSingleLine(pageHeading);
+    await expect(pageHeading).toBeInViewport();
     const illustration = climateBook.getByRole('img');
     await expect.poll(() => illustration.evaluate((image) => image.naturalWidth)).toBeGreaterThan(0);
     await expect(climateBook.getByRole('link', { name: /^Gates/ })).toBeVisible();
     if (heading !== 'The Green Premium') {
       await next.click();
-      await expect(climateBook).toHaveJSProperty('scrollTop', 0);
       await expect(next).toBeInViewport();
     }
   }

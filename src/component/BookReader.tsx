@@ -12,6 +12,7 @@ interface BookReaderProps
 export default function BookReader({ book, startPage, onClose }: BookReaderProps)
 {
   const dialog = React.useRef<HTMLDialogElement>(null);
+  const reading = React.useRef<HTMLDivElement>(null);
   const titleId = React.useId();
   const { pages } = book;
   const [{ current, previous }, setPage] = React.useState({ current: startPage, previous: startPage });
@@ -21,8 +22,9 @@ export default function BookReader({ book, startPage, onClose }: BookReaderProps
   }, []);
 
   React.useLayoutEffect(() => {
-    dialog.current.scrollTop = 0;
-  }, [current]);
+    // On narrow screens the cover sits above the page. Start each turn at the reading area.
+    dialog.current.scrollTop = current === previous ? 0 : reading.current.offsetTop;
+  }, [current, previous]);
 
   function turnPage(direction: -1 | 1)
   {
@@ -67,7 +69,7 @@ export default function BookReader({ book, startPage, onClose }: BookReaderProps
         {book.subtitle && <p className="book-subtitle">{book.subtitle}</p>}
         <p className="book-author">{book.author}</p>
       </header>
-      <div className="book-reading">
+      <div className="book-reading" ref={reading}>
         <div className="book-leaves">
           {pages.map((page, index) => {
             const active = index === current;

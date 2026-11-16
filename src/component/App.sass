@@ -33,14 +33,16 @@ body:has(.book-reader[open])
 
 .content
   position: relative
-  height: 57vh
-  min-height: 10rem
+  height: max(6rem, 18vh)
+  overflow: hidden
 
   canvas
+    // Keep the scene at its original scale and center the lettering in the shorter header.
     position: absolute
-    top: 3vh
+    top: 50%
     left: 0
     width: 100%
     height: 50vh
+    transform: translateY(-50%)
     touch-action: pan-y
     user-select: none

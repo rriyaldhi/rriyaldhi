@@ -1,5 +1,6 @@
 import * as React from "react";
 import "./App.sass";
+import Bookshelf from "./Bookshelf";
 import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera.js';
 import { Engine } from '@babylonjs/core/Engines/engine.js';
 import { Color4 } from '@babylonjs/core/Maths/math.color.js';
@@ -61,19 +62,21 @@ export default class App extends React.Component<{}, AppState>
   {
     const { page, contentAnimation} = this.state;
 
-    return <div id={'app'}>
-      <span className={'meta-description'}>rizky riyaldhi</span>
+    return <main id={'app'}>
+      <h1 className={'meta-description'}>rizky riyaldhi</h1>
       <div
         className={`content ${window.innerWidth < 720 ? '' : 'animated'} ${contentAnimation}`}
       >
         <canvas
+          aria-hidden="true"
           ref={this._titleCanvas}
           style={{visibility: page === 1 ? 'visible' : 'hidden'}}
           onMouseEnter={this._canvasMouseEnterCallback}
           onMouseLeave={this._canvasMouseLeaveCallback}
         />
       </div>
-    </div>
+      <Bookshelf />
+    </main>
   }
 
   @boundMethod

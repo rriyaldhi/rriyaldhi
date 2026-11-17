@@ -88,7 +88,7 @@ export default function BookReader({ book, startPage, onClose }: BookReaderProps
               aria-hidden={!active}
               inert={!active}
             >
-              <BookIllustration page={page} />
+              <BookIllustration image={page.image} alt={page.alt} />
               <h3>{page.title}</h3>
               <p>{page.text}</p>
               {page.source && <a className="book-source" href={page.source.url}>{page.source.label}</a>}

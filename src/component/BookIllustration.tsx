@@ -1,18 +1,17 @@
-import type { BookPage } from "./books";
-
 interface BookIllustrationProps
 {
-  page: BookPage;
-  decorative?: boolean;
+  image: string;
+  alt: string;
+  loading?: "lazy" | "eager";
 }
 
-export default function BookIllustration({ page, decorative = false }: BookIllustrationProps)
+export default function BookIllustration({ image, alt, loading = "eager" }: BookIllustrationProps)
 {
   return <span className="book-illustration">
     <img
-      src={page.image}
-      alt={decorative ? "" : page.alt}
-      loading={decorative ? "lazy" : "eager"}
+      src={image}
+      alt={alt}
+      loading={loading}
     />
   </span>;
 }

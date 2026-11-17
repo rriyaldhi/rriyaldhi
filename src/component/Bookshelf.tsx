@@ -36,7 +36,7 @@ export default function Bookshelf()
             <span className="book-card-title">{book.title}</span>
             {book.subtitle && <span className="book-card-subtitle">{book.subtitle}</span>}
           </span>
-          <BookIllustration page={book.pages[0]} decorative />
+          <BookIllustration image={book.coverImage} alt="" loading="lazy" />
           <span className="book-card-author" id={`book-author-${book.id}`}>{book.author}</span>
           <span className="book-card-arrow" aria-hidden="true">↗</span>
         </button>

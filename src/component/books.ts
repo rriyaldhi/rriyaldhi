@@ -13,6 +13,7 @@ export interface Book
   title: string;
   subtitle?: string;
   author: string;
+  coverImage: string;
   pages: readonly [BookPage, ...BookPage[]];
 }
 
@@ -21,6 +22,7 @@ export const books: readonly Book[] = [{
   title: "Sapiens",
   subtitle: "A Brief History of Humankind",
   author: "Yuval Noah Harari",
+  coverImage: new URL("../resource/image/books/sapiens-cover.jpg", import.meta.url).href,
   pages: [
     {
       image: new URL("../resource/image/books/sapiens-agriculture.jpg", import.meta.url).href,
@@ -54,6 +56,7 @@ export const books: readonly Book[] = [{
   title: "How to Avoid a Climate Disaster",
   subtitle: "The Solutions We Have and the Breakthroughs We Need",
   author: "Bill Gates",
+  coverImage: new URL("../resource/image/books/climate-cover.jpg", import.meta.url).href,
   pages: [
     {
       image: new URL("../resource/image/books/climate-net-zero.jpg", import.meta.url).href,
@@ -91,6 +94,7 @@ export const books: readonly Book[] = [{
   title: "Inside of a Dog",
   subtitle: "What Dogs See, Smell, and Know",
   author: "Alexandra Horowitz",
+  coverImage: new URL("../resource/image/books/dog-cover.jpg", import.meta.url).href,
   pages: [
     {
       image: new URL("../resource/image/books/dog-world.jpg", import.meta.url).href,

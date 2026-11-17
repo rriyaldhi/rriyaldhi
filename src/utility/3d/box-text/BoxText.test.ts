@@ -12,12 +12,13 @@ import Color from "../../color/Color";
 describe('Text', () =>
 {
   let text: BoxText;
+  let scene: Scene;
 
   beforeEach(() =>
   {
     const canvas: HTMLCanvasElement = document.createElement('canvas');
     const engine: Engine = EngineSingleton.getInstance(canvas);
-    const scene: Scene = SceneSingleton.getInstance(engine);
+    scene = SceneSingleton.getInstance(engine);
     const color: Color = new Color('white', 'black');
     text = new BoxText(
       scene,
@@ -68,6 +69,20 @@ describe('Text', () =>
     jest.spyOn(text, 'initiate');
     text.onScreenSizeUpdate(1280);
     expect(text.initiate).toHaveBeenCalledTimes(1);
+  });
+
+  it('releases the old textures when rebuilding the title', () =>
+  {
+    const originalTextures = scene.textures.length;
+    text.initiate(375);
+    const texturesAfterBuild = scene.textures.length;
+    expect(texturesAfterBuild).toBeGreaterThan(originalTextures);
+
+    text.onScreenSizeUpdate(667);
+    expect(scene.textures.length).toBe(texturesAfterBuild);
+
+    text['dispose']();
+    expect(scene.textures.length).toBe(originalTextures);
   });
 
   it ('should be able to run interpolation done callback', () =>

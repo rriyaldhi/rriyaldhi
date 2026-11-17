@@ -27,7 +27,7 @@ export default class App extends React.Component<{}, AppState>
   private _boxText: BoxText;
   private _canvasActive: boolean;
   private _animationRunning: number;
-  private _currentMobile: boolean;
+  private _screenWidth: number;
   private readonly _screenSizeObserver: ScreenSizeObserver;
   private readonly _titleCanvas = React.createRef<HTMLCanvasElement>();
 
@@ -37,7 +37,6 @@ export default class App extends React.Component<{}, AppState>
     this._screenSizeObserver = ScreenSizeObserverSingleton.getInstance();
     this._canvasActive = true;
     this._animationRunning = 0;
-    this._currentMobile = this._getMobile();
     this.state =
     {
       page: 1,
@@ -56,6 +55,15 @@ export default class App extends React.Component<{}, AppState>
     window.addEventListener("resize", this._onResize);
     window.addEventListener("focus", this._onWindowFocus);
     window.addEventListener("blur", this._onWindowLeave);
+  }
+
+  componentWillUnmount(): void
+  {
+    window.removeEventListener("resize", this._onResize);
+    window.removeEventListener("focus", this._onWindowFocus);
+    window.removeEventListener("blur", this._onWindowLeave);
+    if (this._boxText) this._screenSizeObserver.detach(this._boxText);
+    this._engine?.dispose();
   }
 
   render()
@@ -82,44 +90,28 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _onResize(): void
   {
-    if (this._currentMobile != this._getMobile())
+    if (!this._engine) return;
+
+    this._engine.resize();
+    const width = window.innerWidth;
+    if (width !== this._screenWidth)
     {
-      this._canvasActive = true;
       this._animationRunning = 0;
-      this._currentMobile = this._getMobile();
-      this._initializeCanvas();
-      this.setState(
-        {
-          page: 1,
-          animationRun: false,
-          contentAnimation: '',
-          loading: false
-        }
-      );
+      this._screenWidth = width;
+      this._screenSizeObserver.notify(width);
+      this.setState({ animationRun: false });
     }
-    else
-    {
-      this._titleCanvas.current.width = window.innerWidth;
-      this._engine.resize();
-      this._screenSizeObserver.notify(window.innerWidth);
-      this._engine.stopRenderLoop();
-      this._engine.runRenderLoop(() =>
-      {
-        this._renderCanvas();
-      });
-    }
+    this._engine.runRenderLoop(this._renderCanvas);
   }
 
   @boundMethod
   private _initializeCanvas(): void
   {
-    if (this._engine)
-    {
-      this._engine.stopRenderLoop();
-    }
+    const canvas = this._titleCanvas.current;
+    if (!canvas) return;
     this._engine = new Engine
     (
-      this._titleCanvas.current,
+      canvas,
       false,
       null,
       true
@@ -140,12 +132,10 @@ export default class App extends React.Component<{}, AppState>
       this._boxAnimationHalfEndCallback,
       this._boxAnimationEndCallback
     );
-    this._boxText.initiate(window.innerWidth);
+    this._screenWidth = window.innerWidth;
+    this._boxText.initiate(this._screenWidth);
     this._screenSizeObserver.attach(this._boxText);
-    this._engine.runRenderLoop(() =>
-    {
-      this._renderCanvas();
-    });
+    this._engine.runRenderLoop(this._renderCanvas);
   }
 
   @boundMethod
@@ -224,11 +214,7 @@ export default class App extends React.Component<{}, AppState>
     this._canvasActive = true;
     if (this._engine)
     {
-      this._engine.stopRenderLoop();
-      this._engine.runRenderLoop(() =>
-      {
-        this._renderCanvas();
-      });
+      this._engine.runRenderLoop(this._renderCanvas);
     }
   }
 
@@ -250,11 +236,7 @@ export default class App extends React.Component<{}, AppState>
   {
     if (this._engine)
     {
-      this._engine.stopRenderLoop();
-      this._engine.runRenderLoop(() =>
-      {
-        this._renderCanvas();
-      });
+      this._engine.runRenderLoop(this._renderCanvas);
     }
   }
 

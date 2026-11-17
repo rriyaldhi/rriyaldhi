@@ -119,6 +119,34 @@ for (const [orientation, viewport] of [
   });
 }
 
+test('keeps the reader usable through mobile resize events without rebuilding the title', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.addInitScript(() => {
+    window.titleTextureCount = 0;
+    const getContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (type, options) {
+      if (type === '2d' && this.width === 512 && this.height === 512) {
+        window.titleTextureCount++;
+      }
+      return getContext.call(this, type, options);
+    };
+  });
+  await page.goto('/');
+  await expect.poll(() => page.evaluate(() => window.titleTextureCount)).toBeGreaterThan(0);
+
+  await page.getByRole('button', { name: 'Read Sapiens' }).click();
+  const book = page.getByRole('dialog', { name: 'Sapiens' });
+  const allocatedTextures = await page.evaluate(() => {
+    const before = window.titleTextureCount;
+    for (let i = 0; i < 3; i++) window.dispatchEvent(new Event('resize'));
+    return window.titleTextureCount - before;
+  });
+  expect(allocatedTextures).toBe(0);
+
+  await book.getByRole('button', { name: 'Next page' }).click();
+  await expect(book.getByRole('heading', { name: 'Shared stories' })).toBeInViewport({ ratio: 1 });
+});
+
 test('reads the climate book and keeps its page position separate from Sapiens', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
   await page.emulateMedia({ reducedMotion: 'reduce' });

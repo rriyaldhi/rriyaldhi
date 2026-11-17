@@ -135,8 +135,9 @@ export class BoxText implements ScreenSizeObserverInterface
   {
     this._boxMeshes.forEach((boxMesh: Mesh) =>
     {
-      boxMesh.dispose();
+      boxMesh.dispose(false, true);
     });
+    this._boxMeshes.length = 0;
   }
 
   private build(screenSize: number): void

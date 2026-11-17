@@ -137,6 +137,17 @@
     height: 2.75rem
     font: 1.65rem/1 sans-serif
 
+@media (prefers-reduced-motion: no-preference)
+  .book-reader[data-opening-from-shelf][open]::backdrop
+    animation: book-backdrop-enter 420ms ease-out
+
+@keyframes book-backdrop-enter
+  from
+    opacity: 0
+
+  to
+    opacity: 1
+
 .book-spread
   display: grid
   grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr)

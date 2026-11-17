@@ -6,10 +6,11 @@ interface BookReaderProps
 {
   book: Book;
   startPage: number;
+  openingOrigin: DOMRect | null;
   onClose: (page: number) => void;
 }
 
-export default function BookReader({ book, startPage, onClose }: BookReaderProps)
+export default function BookReader({ book, startPage, openingOrigin, onClose }: BookReaderProps)
 {
   const dialog = React.useRef<HTMLDialogElement>(null);
   const reading = React.useRef<HTMLDivElement>(null);
@@ -18,8 +19,21 @@ export default function BookReader({ book, startPage, onClose }: BookReaderProps
   const [{ current, previous }, setPage] = React.useState({ current: startPage, previous: startPage });
 
   React.useLayoutEffect(() => {
-    dialog.current.showModal();
-  }, []);
+    const reader = dialog.current;
+    reader.showModal();
+    if (!openingOrigin || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const bounds = reader.getBoundingClientRect();
+    const x = openingOrigin.left + openingOrigin.width / 2 - (bounds.left + bounds.width / 2);
+    const y = openingOrigin.top + openingOrigin.height / 2 - (bounds.top + bounds.height / 2);
+    const scale = Math.min(openingOrigin.width / bounds.width, openingOrigin.height / bounds.height, 0.8);
+    const animation = reader.animate([
+      { transform: `perspective(1200px) translate(${x}px, ${y}px) rotateY(-28deg) scale(${scale})` },
+      { transform: 'perspective(1200px) translate(0, 0) rotateY(0deg) scale(1)' },
+    ], { duration: 420, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
+
+    return () => animation.cancel();
+  }, [openingOrigin]);
 
   React.useLayoutEffect(() => {
     // On narrow screens the cover sits above the page. Start each turn at the reading area.
@@ -51,6 +65,7 @@ export default function BookReader({ book, startPage, onClose }: BookReaderProps
   return <dialog
     ref={dialog}
     className="book-reader"
+    data-opening-from-shelf={openingOrigin ? '' : undefined}
     aria-labelledby={titleId}
     onKeyDown={handleKeyDown}
     onClose={() => onClose(current)}

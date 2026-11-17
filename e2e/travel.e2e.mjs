@@ -1,5 +1,21 @@
 import { expect, test } from '@playwright/test';
 
+test('the world map tilts into view and settles flat', async ({ page }) => {
+  await page.setViewportSize({ width: 900, height: 650 });
+  await page.goto('/');
+  const frame = page.locator('.travel-map');
+  await frame.evaluate((map) => {
+    window.scrollBy(0, map.getBoundingClientRect().top - window.innerHeight + 80);
+  });
+  await expect.poll(() => frame.evaluate((map) => {
+    const transform = getComputedStyle(map).transform;
+    return transform !== 'none' && Math.abs(new DOMMatrixReadOnly(transform).m23) > 0.1;
+  })).toBe(true);
+
+  await frame.scrollIntoViewIfNeeded();
+  await expect(frame).toHaveCSS('transform', 'none');
+});
+
 test('opens China from its map shape and returns to the world map', async ({ page }) => {
   await page.goto('/');
   const travel = page.getByRole('region', { name: 'Travel', exact: true });
@@ -29,6 +45,7 @@ test('opens the country with the keyboard on a narrow viewport', async ({ page }
   await page.goto('/');
   const travel = page.getByRole('region', { name: 'Travel', exact: true });
   const china = travel.getByRole('button', { name: 'China', exact: true });
+  await expect(travel.locator('.travel-map')).toHaveCSS('transform', 'none');
   await china.focus();
   await page.keyboard.press('Enter');
 

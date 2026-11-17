@@ -7,13 +7,14 @@ import "./Bookshelf.sass";
 
 export default function Bookshelf()
 {
-  const [activeBook, setActiveBook] = React.useState<Book | null>(null);
+  const [selection, setSelection] = React.useState<{ book: Book; origin: DOMRect | null } | null>(null);
   const [lastPages, setLastPages] = React.useState<Record<string, number>>({});
+  const activeBook = selection?.book;
 
   function closeBook(page: number)
   {
     setLastPages((previous) => ({ ...previous, [activeBook.id]: page }));
-    setActiveBook(null);
+    setSelection(null);
   }
 
   return <section className="bookshelf" aria-labelledby="books-heading">
@@ -29,7 +30,10 @@ export default function Bookshelf()
           aria-haspopup="dialog"
           onClick={(event) => {
             event.currentTarget.focus();
-            setActiveBook(book);
+            setSelection({
+              book,
+              origin: event.detail > 0 ? event.currentTarget.getBoundingClientRect() : null,
+            });
           }}
         >
           <span className="book-card-heading">
@@ -45,6 +49,7 @@ export default function Bookshelf()
     {activeBook && <BookReader
       key={activeBook.id}
       book={activeBook}
+      openingOrigin={selection.origin}
       startPage={lastPages[activeBook.id] ?? 0}
       onClose={closeBook}
     />}

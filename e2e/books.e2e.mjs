@@ -34,6 +34,11 @@ test('lists Sapiens on the bookshelf and inverts buttons on hover', async ({ pag
   await expect(openBook).toHaveCSS('color', 'rgb(255, 255, 255)');
   await openBook.click();
 
+  const book = page.getByRole('dialog', { name: 'Sapiens' });
+  expect(await book.evaluate((dialog) => dialog.getAnimations().some((animation) =>
+    animation.effect.getKeyframes().some((frame) => frame.transform?.includes('rotateY')),
+  ))).toBe(true);
+
   const next = page.getByRole('button', { name: 'Next page' });
   await next.hover();
   await expect(next).toHaveCSS('background-color', 'rgb(0, 0, 0)');
@@ -84,6 +89,7 @@ test('keeps the reader inside a narrow viewport with reduced motion', async ({ p
   await page.getByRole('button', { name: 'Read Sapiens' }).click();
   const book = page.getByRole('dialog', { name: 'Sapiens' });
 
+  expect(await book.evaluate((dialog) => dialog.getAnimations().length)).toBe(0);
   await expectSingleLine(book.getByRole('heading', { name: 'Sapiens', exact: true }));
   await book.getByRole('button', { name: 'Next page' }).click();
   await expect(book.getByRole('status')).toHaveText('Page 2 of 3');

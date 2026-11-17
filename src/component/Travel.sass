@@ -1,0 +1,201 @@
+.travel
+  box-sizing: border-box
+  width: min(64rem, calc(100% - 3rem))
+  margin: 0 auto
+  padding: 1.25rem 0 4rem
+  border-top: 1px solid #000
+  color: #151515
+  font: 500 0.875rem/1.4 'Quicksand', sans-serif
+
+  h2, h3, h4
+    margin: 0
+    font: normal clamp(2rem, 4vw, 3rem)/1.08 Georgia, serif
+    letter-spacing: -0.04em
+
+  h2
+    margin-bottom: 1.15rem
+
+  button
+    border: 1px solid #151515
+    background: #fff
+    color: inherit
+    font: inherit
+    cursor: pointer
+
+  :is(button, a):focus-visible
+    outline: 2px solid #000
+    outline-offset: 3px
+
+.travel-map
+  position: relative
+  overflow: hidden
+  border: 1px solid #151515
+  background: #fff
+
+  svg
+    display: block
+    width: 100%
+    height: auto
+
+.travel-map-camera, .travel-map-marker
+  transition-duration: 700ms
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1)
+
+.travel-map-camera
+  transition-property: transform
+
+.travel-map-grid
+  fill: none
+  stroke: #bcbcbc
+  stroke-width: 0.65
+  stroke-dasharray: 2 4
+  pointer-events: none
+
+.travel-map-land, .travel-map-visited
+  fill-rule: evenodd
+  stroke: #fff
+  stroke-width: 0.6
+  vector-effect: non-scaling-stroke
+
+.travel-map-land
+  fill: #d5d5d5
+  pointer-events: none
+
+.travel-map-visited
+  fill: #171717
+  cursor: pointer
+
+  &:hover
+    fill: #494949
+
+.travel .travel-map-marker
+  position: absolute
+  display: flex
+  align-items: center
+  gap: 0.4rem
+  min-height: 2.1rem
+  padding: 0.25rem 0.65rem
+  transform: translate(0.65rem, -50%)
+  transition-property: left, top
+  box-shadow: 2px 2px #151515
+  font-weight: 700
+
+  &::before
+    content: ''
+    position: absolute
+    top: 50%
+    right: 100%
+    width: 0.65rem
+    border-top: 1px solid #fff
+
+  &:hover
+    background: #151515
+    color: #fff
+
+.travel-map-caption
+  display: flex
+  justify-content: space-between
+  align-items: center
+  gap: 1rem
+  margin-top: 0.65rem
+  color: #535353
+
+  a
+    color: inherit
+    text-underline-offset: 0.18em
+
+.travel-map-legend
+  display: flex
+  align-items: center
+  gap: 0.45rem
+
+  &::before
+    content: ''
+    width: 0.65rem
+    height: 0.65rem
+    background: #171717
+
+.travel-country-heading
+  display: flex
+  flex-wrap: wrap
+  justify-content: space-between
+  align-items: center
+  gap: 0.75rem 1rem
+  margin: 1.8rem 0 1rem
+  padding-top: 1.2rem
+  border-top: 1px solid #151515
+
+  h3
+    font-size: clamp(1.9rem, 3vw, 2.65rem)
+
+  button
+    padding: 0.5rem 0.75rem
+
+    &:hover
+      background: #151515
+      color: #fff
+
+.travel-postcards
+  display: grid
+  grid-template-columns: repeat(2, minmax(0, 1fr))
+  gap: 1.25rem
+  margin: 0
+  padding: 0
+  list-style: none
+  perspective: 1200px
+
+.travel-postcard
+  padding: 0.6rem
+  border: 1px solid #151515
+  background: #fff
+  transform-origin: top
+  animation: travel-postcard-arrive 510ms cubic-bezier(0.22, 1, 0.36, 1) 130ms both
+
+  &:nth-child(2)
+    animation-delay: 220ms
+
+  img
+    display: block
+    width: 100%
+    aspect-ratio: 3 / 2
+    object-fit: cover
+    filter: grayscale(1)
+    background: #ededed
+
+.travel-postcard-caption
+  padding: 0.8rem 0.35rem 0.35rem
+
+  h4
+    font-size: clamp(1.35rem, 3vw, 2rem)
+
+  p
+    margin: 0.35rem 0 0
+    color: #535353
+
+@keyframes travel-postcard-arrive
+  from
+    opacity: 0
+    transform: translateY(0.85rem) rotateX(-22deg)
+  to
+    opacity: 1
+    transform: none
+
+@media (max-width: 550px)
+  .travel-postcards
+    grid-template-columns: 1fr
+
+  .travel .travel-map-marker
+    min-height: 1.75rem
+    padding: 0 0.35rem
+    transform: translate(0.3rem, -50%)
+    font-size: 0.75rem
+
+    &::before
+      width: 0.3rem
+
+@media (prefers-reduced-motion: reduce)
+  .travel-map-camera, .travel-map-marker
+    transition: none
+
+  .travel-postcards .travel-postcard
+    animation: none

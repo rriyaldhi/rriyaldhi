@@ -1,6 +1,7 @@
 import * as React from "react";
 import "./App.sass";
 import Bookshelf from "./Bookshelf";
+import Travel from "./Travel";
 import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera.js';
 import { Engine } from '@babylonjs/core/Engines/engine.js';
 import { Color4 } from '@babylonjs/core/Maths/math.color.js';
@@ -84,6 +85,7 @@ export default class App extends React.Component<{}, AppState>
         />
       </div>
       <Bookshelf />
+      <Travel />
     </main>
   }
 

@@ -13,12 +13,22 @@ import {BoxText} from "../utility/3d/box-text/BoxText";
 import {boundMethod} from 'autobind-decorator';
 import {BOX_COLOR, FONT_FAMILY, FONT_TYPE} from "./App.constant";
 
-export interface AppState
+const sections = [
+  { id: "books", label: "Books", Content: Bookshelf },
+  { id: "travel", label: "Travel", Content: Travel },
+] as const;
+
+type Section = typeof sections[number]["id"];
+
+function getActiveSection(): Section | undefined
 {
-  page: number,
-  animationRun: boolean,
-  contentAnimation: string,
-  loading: boolean
+  return sections.find(({ id }) => window.location.hash === `#${id}`)?.id;
+}
+
+interface AppState
+{
+  section: Section | undefined,
+  hasCanvas: boolean
 }
 
 export default class App extends React.Component<{}, AppState>
@@ -40,19 +50,20 @@ export default class App extends React.Component<{}, AppState>
     this._animationRunning = 0;
     this.state =
     {
-      page: 1,
-      animationRun: false,
-      contentAnimation: '',
-      loading: false
+      section: getActiveSection(),
+      hasCanvas: false
     }
   }
 
   componentDidMount(): void
   {
-    document.fonts.load('10pt "'+FONT_FAMILY+'"').then(() =>
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches)
     {
-      this._initializeCanvas();
-    });
+      document.fonts.load('10pt "' + FONT_FAMILY + '"')
+        .catch(() => { /* The canvas can use its fallback font. */ })
+        .then(this._initializeCanvas);
+    }
+    window.addEventListener("hashchange", this._onSectionChange);
     window.addEventListener("resize", this._onResize);
     window.addEventListener("focus", this._onWindowFocus);
     window.addEventListener("blur", this._onWindowLeave);
@@ -60,6 +71,7 @@ export default class App extends React.Component<{}, AppState>
 
   componentWillUnmount(): void
   {
+    window.removeEventListener("hashchange", this._onSectionChange);
     window.removeEventListener("resize", this._onResize);
     window.removeEventListener("focus", this._onWindowFocus);
     window.removeEventListener("blur", this._onWindowLeave);
@@ -69,24 +81,37 @@ export default class App extends React.Component<{}, AppState>
 
   render()
   {
-    const { page, contentAnimation} = this.state;
+    const { section, hasCanvas } = this.state;
 
-    return <main id={'app'}>
-      <h1 className={'meta-description'}>rizky riyaldhi</h1>
-      <div
-        className={`content ${window.innerWidth < 720 ? '' : 'animated'} ${contentAnimation}`}
-      >
+    return <main id="app">
+      <header className="site-header" data-section-open={!!section} data-canvas-ready={hasCanvas}>
         <canvas
+          className="site-title-canvas"
           aria-hidden="true"
           ref={this._titleCanvas}
-          style={{visibility: page === 1 ? 'visible' : 'hidden'}}
           onMouseEnter={this._canvasMouseEnterCallback}
-          onMouseLeave={this._canvasMouseLeaveCallback}
+          onPointerLeave={this._canvasPointerLeaveCallback}
         />
-      </div>
-      <Bookshelf />
-      <Travel />
+        <h1 className="site-name"><a href="#">rizky riyaldhi</a></h1>
+        <nav className="site-menu" aria-label="Sections">
+          {section && <a href="#"><span aria-hidden="true">←</span> Home</a>}
+          {sections.map(({ id, label }) => <a
+            key={id}
+            href={`#${id}`}
+            aria-current={section === id ? "page" : undefined}
+          >{label}</a>)}
+        </nav>
+      </header>
+      {sections.map(({ id, Content }) => <div className="site-section" key={id} hidden={section !== id}>
+        <Content />
+      </div>)}
     </main>
+  }
+
+  @boundMethod
+  private _onSectionChange(): void
+  {
+    this.setState({ section: getActiveSection() }, () => window.scrollTo(0, 0));
   }
 
   @boundMethod
@@ -101,7 +126,6 @@ export default class App extends React.Component<{}, AppState>
       this._animationRunning = 0;
       this._screenWidth = width;
       this._screenSizeObserver.notify(width);
-      this.setState({ animationRun: false });
     }
     this._engine.runRenderLoop(this._renderCanvas);
   }
@@ -110,7 +134,7 @@ export default class App extends React.Component<{}, AppState>
   private _initializeCanvas(): void
   {
     const canvas = this._titleCanvas.current;
-    if (!canvas) return;
+    if (!canvas || !Engine.isSupported()) return;
     this._engine = new Engine
     (
       canvas,
@@ -138,6 +162,7 @@ export default class App extends React.Component<{}, AppState>
     this._boxText.initiate(this._screenWidth);
     this._screenSizeObserver.attach(this._boxText);
     this._engine.runRenderLoop(this._renderCanvas);
+    this.setState({ hasCanvas: true });
   }
 
   @boundMethod
@@ -158,56 +183,23 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _boxAnimationHalfEndCallback(): void
   {
-    if (this._getMobile())
+    if (window.innerWidth < 720)
     {
-      this.setState({
-        ...this.state,
-        animationRun: true,
-      });
-      if (this._animationRunning > 0)
-        this._animationRunning--;
-      if (this._animationRunning == 0)
-      {
-        if (!this._canvasActive)
-        {
-          if (this._engine)
-          {
-            this._engine.stopRenderLoop();
-          }
-        }
-      }
+      this._boxAnimationEndCallback();
     }
   }
 
   @boundMethod
   private _boxAnimationEndCallback(): void
   {
-    if (!this._getMobile())
+    if (this._animationRunning > 0)
     {
-      this.setState({
-        ...this.state,
-        animationRun: true,
-      });
-      if (this._animationRunning > 0)
-        this._animationRunning--;
-      if (this._animationRunning == 0)
-      {
-        if (!this._canvasActive)
-        {
-          if (this._engine)
-          {
-            this._engine.stopRenderLoop();
-          }
-        }
-      }
+      this._animationRunning--;
     }
-  }
-
-  @boundMethod
-  private _getMobile()
-  {
-    const width = window.innerWidth;
-    return width < 720;
+    if (this._animationRunning === 0 && !this._canvasActive)
+    {
+      this._engine?.stopRenderLoop();
+    }
   }
 
   @boundMethod
@@ -221,15 +213,17 @@ export default class App extends React.Component<{}, AppState>
   }
 
   @boundMethod
-  private _canvasMouseLeaveCallback(): void
+  private _canvasPointerLeaveCallback(event: React.PointerEvent<HTMLCanvasElement>): void
   {
     this._canvasActive = false;
-    if (this._animationRunning == 0)
+    // Babylon runs its pointer-out action when picking changes. Leaving the canvas skips picking.
+    if (this._scene?.getPointerOverMesh())
     {
-      if (this._engine)
-      {
-        this._engine.stopRenderLoop();
-      }
+      this._scene.setPointerOverMesh(null, event.pointerId);
+    }
+    else if (this._animationRunning === 0)
+    {
+      this._engine?.stopRenderLoop();
     }
   }
 

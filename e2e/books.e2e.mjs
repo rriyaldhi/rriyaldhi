@@ -24,7 +24,7 @@ test.beforeEach(async ({ page, baseURL }) => {
 });
 
 test('lists Sapiens on the bookshelf and inverts buttons on hover', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#books');
   const shelf = page.getByRole('region', { name: 'Books' });
   const openBook = shelf.getByRole('button', { name: 'Read Sapiens' });
   await expect(openBook).toHaveCSS('background-color', 'rgb(255, 255, 255)');
@@ -45,9 +45,9 @@ test('lists Sapiens on the bookshelf and inverts buttons on hover', async ({ pag
   await expect(next).toHaveCSS('color', 'rgb(255, 255, 255)');
 });
 
-test('reads all three Sapiens pages and returns to the homepage', async ({ page }) => {
+test('reads all three Sapiens pages and returns to the bookshelf', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/');
+  await page.goto('/#books');
   const openBook = page.getByRole('button', { name: 'Read Sapiens' });
   await openBook.click();
 
@@ -85,7 +85,7 @@ test('reads all three Sapiens pages and returns to the homepage', async ({ page 
 test('keeps the reader inside a narrow viewport with reduced motion', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/');
+  await page.goto('/#books');
   await page.getByRole('button', { name: 'Read Sapiens' }).click();
   const book = page.getByRole('dialog', { name: 'Sapiens' });
 
@@ -115,7 +115,7 @@ for (const [orientation, viewport] of [
       ['Inside of a Dog', 'Smelling the past'],
     ]) {
       test(`shows the start of page two of ${title} after tapping Next`, async ({ page }) => {
-        await page.goto('/');
+        await page.goto('/#books');
         await page.getByRole('button', { name: `Read ${title}` }).tap();
         const book = page.getByRole('dialog', { name: title });
         const controls = book.getByRole('group', { name: 'Book pages' });
@@ -150,7 +150,7 @@ test('keeps the reader usable through mobile resize events without rebuilding th
       return getContext.call(this, type, options);
     };
   });
-  await page.goto('/');
+  await page.goto('/#books');
   await expect.poll(() => page.evaluate(() => window.titleTextureCount)).toBeGreaterThan(0);
 
   await page.getByRole('button', { name: 'Read Sapiens' }).click();
@@ -169,7 +169,7 @@ test('keeps the reader usable through mobile resize events without rebuilding th
 test('reads the climate book and keeps its page position separate from Sapiens', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/');
+  await page.goto('/#books');
   const title = 'How to Avoid a Climate Disaster';
   const openClimateBook = page.getByRole('button', { name: `Read ${title}` });
   await openClimateBook.click();

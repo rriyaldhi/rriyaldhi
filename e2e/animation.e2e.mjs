@@ -15,7 +15,7 @@ test('a 3D letter flips to its dark face on hover and returns when the pointer l
   const bounds = await canvas.boundingBox();
   const x = Math.round(bounds.x + bounds.width / 2 + 24);
   const y = Math.round(bounds.y + bounds.height / 2);
-  expect(y, 'The 3D title is near the top of the page').toBeLessThan(120);
+  expect(y, 'The 3D title is centered on the landing view').toBe(400);
   // Sample the inside of a single near-center letter's face.
   const face = { x: x - 12, y: y - 12, width: 24, height: 24 };
   const darkPixels = () => countDarkPixels(page, { clip: face });

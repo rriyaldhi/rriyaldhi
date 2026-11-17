@@ -23,26 +23,117 @@ body:has(.book-reader[open])
   background: #000
   color: #fff
 
-.meta-description
-  position: absolute
-  width: 1px
-  height: 1px
-  margin: 0
-  overflow: hidden
-  clip-path: inset(50%)
-
-.content
+.site-header
+  --header-easing: cubic-bezier(0.22, 1, 0.36, 1)
+  --title-offset: 0rem
+  --title-scale: 1
   position: relative
-  height: max(6rem, 18vh)
+  height: 100vh
+  height: 100svh
   overflow: hidden
 
-  canvas
-    // Keep the scene at its original scale and center the lettering in the shorter header.
-    position: absolute
-    top: 50%
-    left: 0
-    width: 100%
-    height: 50vh
-    transform: translateY(-50%)
-    touch-action: pan-y
-    user-select: none
+  &[data-section-open='true']
+    --title-scale: 0.68
+    height: 9rem
+
+  &[data-canvas-ready='true']
+    .site-title-canvas
+      visibility: visible
+
+    .site-name
+      width: min(85vh, 88vw)
+
+      a
+        color: transparent
+
+.site-title-canvas, .site-name
+  position: absolute
+  top: calc(50% + var(--title-offset))
+  left: 50%
+  transform: translate(-50%, -50%) scale(var(--title-scale))
+
+.site-title-canvas
+  visibility: hidden
+  width: 100%
+  height: min(50vh, 88vw)
+  touch-action: pan-y
+  user-select: none
+
+.site-name
+  margin: 0
+  font: normal clamp(1.9rem, 7vw, 4rem)/1.05 Georgia, serif
+  letter-spacing: -0.045em
+  text-align: center
+  white-space: nowrap
+
+  a
+    display: block
+    color: inherit
+    text-decoration: none
+
+.site-menu
+  position: absolute
+  top: 50%
+  left: clamp(1.5rem, 5vw, 5rem)
+  display: grid
+  justify-items: start
+  transform: translateY(-50%)
+
+  a
+    display: flex
+    align-items: center
+    gap: 0.45rem
+    min-height: 2.75rem
+    color: #383838
+    font: 600 0.83rem/1 'Quicksand', sans-serif
+    letter-spacing: 0.13em
+    text-transform: uppercase
+    text-decoration: none
+    text-underline-offset: 0.42em
+
+    &:hover, &[aria-current='page']
+      color: #000
+      text-decoration: underline
+
+.site-header a:focus-visible
+  outline: 2px solid #000
+  outline-offset: 4px
+
+@media (max-width: 760px), (max-aspect-ratio: 1 / 1)
+  .site-header[data-section-open='true']
+    --title-offset: 1rem
+    --title-scale: 0.78
+
+  .site-menu
+    top: 0.75rem
+    grid-auto-flow: column
+    gap: 1.4rem
+    transform: none
+
+@media (prefers-reduced-motion: no-preference)
+  .site-header
+    transition: height 550ms var(--header-easing)
+
+  .site-header[data-section-open='false'][data-canvas-ready='true'] .site-name
+    pointer-events: none
+
+  .site-title-canvas, .site-name
+    transition: top 550ms var(--header-easing), transform 550ms var(--header-easing)
+
+  .site-section:not([hidden])
+    animation: site-section-reveal 350ms ease-out 180ms both
+
+@keyframes site-section-reveal
+  from
+    opacity: 0
+
+  to
+    opacity: 1
+
+@media (prefers-reduced-motion: reduce)
+  .site-header[data-canvas-ready='true']
+    .site-title-canvas
+      visibility: hidden
+
+    .site-name a
+      color: inherit

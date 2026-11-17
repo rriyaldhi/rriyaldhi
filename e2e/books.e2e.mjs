@@ -23,7 +23,7 @@ test.beforeEach(async ({ page, baseURL }) => {
   );
 });
 
-test('lists Sapiens on the bookshelf and inverts buttons on hover', async ({ page }) => {
+test('opens the illustrated shelf cover and inverts buttons on hover', async ({ page }) => {
   await page.goto('/#books');
   const shelf = page.getByRole('region', { name: 'Books' });
   const openBook = shelf.getByRole('button', { name: 'Read Sapiens' });
@@ -32,17 +32,32 @@ test('lists Sapiens on the bookshelf and inverts buttons on hover', async ({ pag
   await openBook.hover();
   await expect(openBook).toHaveCSS('background-color', 'rgb(0, 0, 0)');
   await expect(openBook).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await page.evaluate(() => {
+    window.coverMotion = [];
+    const animate = Element.prototype.animate;
+    Element.prototype.animate = function (frames, options) {
+      if (this.matches('.book-flight .book-card')) {
+        window.coverMotion.push({ title: this.querySelector('.book-card-title')?.textContent, frames, direction: options.direction });
+      }
+      return animate.call(this, frames, options);
+    };
+  });
   await openBook.click();
 
   const book = page.getByRole('dialog', { name: 'Sapiens' });
-  expect(await book.evaluate((dialog) => dialog.getAnimations().some((animation) =>
-    animation.effect.getKeyframes().some((frame) => frame.transform?.includes('rotateY')),
-  ))).toBe(true);
+  const coverMotion = () => page.evaluate(() => window.coverMotion);
+  await expect.poll(coverMotion).toEqual([expect.objectContaining({
+    title: 'Sapiens',
+    frames: expect.arrayContaining([expect.objectContaining({ transform: expect.stringContaining('rotateY') })]),
+  })]);
 
   const next = page.getByRole('button', { name: 'Next page' });
   await next.hover();
   await expect(next).toHaveCSS('background-color', 'rgb(0, 0, 0)');
   await expect(next).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await book.getByRole('button', { name: 'Close book' }).click();
+  await expect(book).toBeHidden();
+  expect((await coverMotion()).map(({ direction }) => direction)).toEqual(['normal', 'reverse']);
 });
 
 test('reads all three Sapiens pages and returns to the bookshelf', async ({ page }) => {

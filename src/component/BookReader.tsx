@@ -1,4 +1,5 @@
 import * as React from "react";
+import BookCover from "./BookCover";
 import BookIllustration from "./BookIllustration";
 import type { Book } from "./books";
 
@@ -11,44 +12,85 @@ interface BookReaderProps
   onClose: (page: number) => void;
 }
 
-function coverTransform(cover: DOMRect, reader: DOMRect)
-{
-  const x = cover.left + cover.width / 2 - (reader.left + reader.width / 2);
-  const y = cover.top + cover.height / 2 - (reader.top + reader.height / 2);
-  const scale = Math.min(cover.width / reader.width, cover.height / reader.height, 0.8);
-  return `perspective(1200px) translate(${x}px, ${y}px) rotateY(-24deg) scale(${scale})`;
-}
-
-const readerOpen = 'perspective(1200px) translate(0, 0) rotateY(0deg) scale(1)';
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export default function BookReader({ book, startPage, cover, active, onClose }: BookReaderProps)
 {
   const dialog = React.useRef<HTMLDialogElement>(null);
   const reading = React.useRef<HTMLDivElement>(null);
-  const motion = React.useRef<Animation>(null);
+  const flight = React.useRef<HTMLDivElement>(null);
+  const flightCover = React.useRef<HTMLDivElement>(null);
+  const spread = React.useRef<HTMLDivElement>(null);
+  const motion = React.useRef<Animation[]>([]);
   const titleId = React.useId();
   const { pages } = book;
   const [{ current, previous }, setPage] = React.useState({ current: startPage, previous: startPage });
 
-  React.useLayoutEffect(() => {
+  function clearMotion()
+  {
+    motion.current.forEach((animation) => animation.cancel());
+    motion.current = [];
+    flight.current.hidden = true;
+    dialog.current.removeAttribute('data-cover-motion');
+  }
+
+  function moveCover(direction: 'normal' | 'reverse')
+  {
     const reader = dialog.current;
-    reader.showModal();
-    if (!reducedMotion())
-    {
-      motion.current = reader.animate([
-        { transform: coverTransform(cover.getBoundingClientRect(), reader.getBoundingClientRect()) },
-        { transform: readerOpen },
-      ], { duration: 420, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
-    }
-    return () => motion.current?.cancel();
+    const origin = cover.getBoundingClientRect();
+    const frame = reader.getBoundingClientRect();
+    const page = reading.current.getBoundingClientRect();
+    const narrow = window.matchMedia('(max-width: 720px)').matches;
+    const x = (narrow ? frame.left : page.left) - origin.left;
+    const y = frame.top - origin.top;
+    const scaleX = (narrow ? frame.width : page.width) / origin.width;
+    const scaleY = frame.height / origin.height;
+    const dock = `translate(${x}px, ${y}px) perspective(1400px) scale(${scaleX}, ${scaleY})`;
+    const duration = direction === 'normal' ? 540 : 420;
+
+    Object.assign(flight.current.style, {
+      top: `${origin.top}px`,
+      left: `${origin.left}px`,
+      width: `${origin.width}px`,
+      height: `${origin.height}px`,
+    });
+    flight.current.hidden = false;
+    reader.style.setProperty('--cover-duration', `${duration}ms`);
+    reader.dataset.coverMotion = direction;
+
+    const options: KeyframeAnimationOptions = { duration, direction, fill: 'both' };
+    const readerReveal: Keyframe[] = [
+      { opacity: 0 },
+      { opacity: 0, offset: 0.48, easing: 'ease-out' },
+      { opacity: 1, offset: 0.86 },
+      { opacity: 1 },
+    ];
+    const flightAnimation = flightCover.current.animate([
+      { transform: 'translate(0, 0) perspective(1400px) scale(1, 1) rotateY(0deg)', easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+      { transform: `${dock} rotateY(0deg)`, offset: 0.48, easing: 'ease-in-out' },
+      { transform: `${dock} rotateY(-104deg)` },
+    ], options);
+    motion.current = [
+      flightAnimation,
+      spread.current.animate(readerReveal, options),
+    ];
+    flightAnimation.onfinish = () => {
+      if (direction === 'reverse') reader.close();
+      clearMotion();
+    };
+  }
+
+  React.useLayoutEffect(() => {
+    dialog.current.showModal();
+    if (!reducedMotion()) moveCover('normal');
+    return () => motion.current.forEach((animation) => animation.cancel());
   }, [cover]);
 
   React.useLayoutEffect(() => {
     const reader = dialog.current;
     if (!active && reader.open)
     {
-      motion.current?.cancel();
+      clearMotion();
       reader.close();
     }
   }, [active]);
@@ -63,15 +105,20 @@ export default function BookReader({ book, startPage, cover, active, onClose }: 
       return;
     }
 
-    const currentTransform = getComputedStyle(reader).transform;
-    motion.current?.cancel();
-    const origin = coverTransform(cover.getBoundingClientRect(), reader.getBoundingClientRect());
+    if (reader.dataset.coverMotion === 'normal')
+    {
+      reader.setAttribute('data-closing', '');
+      motion.current[0].onfinish = () => {
+        reader.close();
+        clearMotion();
+      };
+      motion.current.forEach((animation) => animation.reverse());
+      return;
+    }
+
+    clearMotion();
     reader.setAttribute('data-closing', '');
-    motion.current = reader.animate([
-      { transform: currentTransform === 'none' ? readerOpen : currentTransform },
-      { transform: origin, opacity: 0 },
-    ], { duration: 300, easing: 'cubic-bezier(0.4, 0, 0.65, 1)', fill: 'forwards' });
-    motion.current.onfinish = () => reader.close();
+    moveCover('reverse');
   }
 
   React.useLayoutEffect(() => {
@@ -105,7 +152,6 @@ export default function BookReader({ book, startPage, cover, active, onClose }: 
   return <dialog
     ref={dialog}
     className="book-reader"
-    data-opening-from-shelf=""
     aria-labelledby={titleId}
     onKeyDown={handleKeyDown}
     onCancel={(event) => {
@@ -114,15 +160,20 @@ export default function BookReader({ book, startPage, cover, active, onClose }: 
     }}
     onClose={() => onClose(current)}
   >
-    <button
-      type="button"
-      className="book-close"
-      aria-label="Close book"
-      onClick={closeReader}
-    >
-      ×
-    </button>
-    <div className="book-spread">
+    <div className="book-flight" ref={flight} hidden aria-hidden="true">
+      <div className="book-card" ref={flightCover} data-long-title={book.title.length > 12 || undefined}>
+        <BookCover book={book} decorative />
+      </div>
+    </div>
+    <div className="book-spread" ref={spread}>
+      <button
+        type="button"
+        className="book-close"
+        aria-label="Close book"
+        onClick={closeReader}
+      >
+        ×
+      </button>
       <header className="book-cover" data-long-title={book.title.length > 12 || undefined}>
         <h2 id={titleId}>{book.title}</h2>
         {book.subtitle && <p className="book-subtitle">{book.subtitle}</p>}

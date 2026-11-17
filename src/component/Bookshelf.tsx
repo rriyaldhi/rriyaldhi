@@ -1,5 +1,5 @@
 import * as React from "react";
-import BookIllustration from "./BookIllustration";
+import BookCover from "./BookCover";
 import BookReader from "./BookReader";
 import { books } from "./books";
 import type { Book } from "./books";
@@ -24,6 +24,7 @@ export default function Bookshelf({ active }: { active: boolean })
         <button
           type="button"
           className="book-card"
+          data-selected={activeBook?.id === book.id || undefined}
           data-long-title={book.title.length > 12 || undefined}
           aria-label={`Read ${book.title}`}
           aria-describedby={`book-author-${book.id}`}
@@ -36,13 +37,7 @@ export default function Bookshelf({ active }: { active: boolean })
             });
           }}
         >
-          <span className="book-card-heading">
-            <span className="book-card-title">{book.title}</span>
-            {book.subtitle && <span className="book-card-subtitle">{book.subtitle}</span>}
-          </span>
-          <BookIllustration image={book.coverImage} alt="" loading="lazy" />
-          <span className="book-card-author" id={`book-author-${book.id}`}>{book.author}</span>
-          <span className="book-card-arrow" aria-hidden="true">↗</span>
+          <BookCover book={book} authorId={`book-author-${book.id}`} />
         </button>
       </li>)}
     </ul>

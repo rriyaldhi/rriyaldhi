@@ -1,8 +1,6 @@
 import { ActionManager } from '@babylonjs/core/Actions/actionManager.js';
 import { InterpolateValueAction } from '@babylonjs/core/Actions/interpolateValueAction.js';
 import '@babylonjs/core/Animations/animatable.js';
-import { Animation } from '@babylonjs/core/Animations/animation.js';
-import { CubicEase, EasingFunction } from '@babylonjs/core/Animations/easing.js';
 import '@babylonjs/core/Culling/ray.js'; // Registers mesh picking for the pointer actions.
 import { DynamicTexture } from '@babylonjs/core/Materials/Textures/dynamicTexture.js';
 import { MultiMaterial } from '@babylonjs/core/Materials/multiMaterial.js';
@@ -125,11 +123,6 @@ export class BoxText implements ScreenSizeObserverInterface
   {
     this._boxMeshes.forEach((boxMesh: Mesh) =>
     {
-      // Cancel before disposal so an unfinished entrance cannot register pointer actions.
-      for (const animation of this._scene.getAllAnimatablesByTarget(boxMesh))
-      {
-        animation.stop(undefined, undefined, false, true);
-      }
       boxMesh.dispose(false, true);
     });
     this._boxMeshes.length = 0;
@@ -202,36 +195,6 @@ export class BoxText implements ScreenSizeObserverInterface
     }
   }
 
-  private animate(): void
-  {
-    const ease = new CubicEase();
-    ease.setEasingMode(EasingFunction.EASINGMODE_EASEOUT);
-    this._boxMeshes.forEach((boxMesh, index) =>
-    {
-      const delay = 1 + 2 * index;
-      const endFrame = delay + 26;
-      const fold = new Animation('letter-fold', ANIMATION_PROPERTY, 60, Animation.ANIMATIONTYPE_FLOAT);
-      fold.setKeys([
-        { frame: 0, value: Math.PI / 2 },
-        { frame: delay, value: Math.PI / 2, easingFunction: ease },
-        { frame: endFrame, value: 0 },
-      ]);
-      const reveal = new Animation('letter-reveal', 'visibility', 60, Animation.ANIMATIONTYPE_FLOAT);
-      reveal.setKeys([
-        { frame: 0, value: 0 },
-        { frame: delay, value: 0 },
-        { frame: delay + 8, value: 1 },
-      ]);
-
-      boxMesh.rotation.x = Math.PI / 2;
-      boxMesh.visibility = 0;
-      this._scene.beginDirectAnimation(boxMesh, [fold, reveal], 0, endFrame, false, 1, () =>
-      {
-        this.registerPointerActions(boxMesh);
-      });
-    });
-  }
-
   private registerPointerActions(boxMesh: Mesh): void
   {
     boxMesh.actionManager = new ActionManager(this._scene);
@@ -259,17 +222,16 @@ export class BoxText implements ScreenSizeObserverInterface
     boxMesh.actionManager.registerAction(pointerOutAction);
   }
 
-  public initiate(screenSize: number, animate = true): void
+  public initiate(screenSize: number): void
   {
     this.dispose();
     this.build(screenSize);
-    if (animate) this.animate();
-    else this._boxMeshes.forEach((boxMesh) => this.registerPointerActions(boxMesh));
+    this._boxMeshes.forEach((boxMesh) => this.registerPointerActions(boxMesh));
   }
 
   public onScreenSizeUpdate(screenSize: number): void
   {
-    this.initiate(screenSize, false);
+    this.initiate(screenSize);
   }
 
 }

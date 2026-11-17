@@ -72,10 +72,11 @@ describe('Text', () =>
     expect(scene.textures.length).toBe(originalTextures);
   });
 
-  it('releases pointer actions when resizing before the entrance finishes', () =>
+  it('draws the wordmark at rest and releases pointer actions on resize', () =>
   {
     const originalActions = scene.actionManagers.length;
     text.initiate(375);
+    expect(scene.animatables).toHaveLength(0);
     text.onScreenSizeUpdate(667);
     text.dispose();
     expect(scene.actionManagers.length).toBe(originalActions);

@@ -176,8 +176,10 @@ export default class App extends React.Component<{}, AppState>
     this._screenWidth = window.innerWidth;
     this._boxText.initiate(this._screenWidth);
     this._screenSizeObserver.attach(this._boxText);
-    this._engine.runRenderLoop(this._renderCanvas);
-    this.setState({ hasCanvas: true });
+    this._scene.executeWhenReady(() =>
+    {
+      this.setState({ hasCanvas: true }, () => this._engine.runRenderLoop(this._renderCanvas));
+    });
   }
 
   @boundMethod

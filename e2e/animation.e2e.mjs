@@ -10,7 +10,7 @@ test('a 3D letter flips to its dark face on hover and returns when the pointer l
   });
   await page.goto('/');
 
-  const canvas = page.locator('#main canvas');
+  const canvas = page.locator('.site-title-canvas');
   await expect(canvas).toBeVisible();
   const bounds = await canvas.boundingBox();
   const x = Math.round(bounds.x + bounds.width / 2 + 24);

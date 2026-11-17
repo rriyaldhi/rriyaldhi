@@ -2,6 +2,7 @@ import { ActionManager } from '@babylonjs/core/Actions/actionManager.js';
 import { InterpolateValueAction } from '@babylonjs/core/Actions/interpolateValueAction.js';
 import '@babylonjs/core/Animations/animatable.js';
 import { Animation } from '@babylonjs/core/Animations/animation.js';
+import { CubicEase, EasingFunction } from '@babylonjs/core/Animations/easing.js';
 import '@babylonjs/core/Culling/ray.js'; // Registers mesh picking for the pointer actions.
 import { DynamicTexture } from '@babylonjs/core/Materials/Textures/dynamicTexture.js';
 import { MultiMaterial } from '@babylonjs/core/Materials/multiMaterial.js';
@@ -14,7 +15,6 @@ import type { Scene } from '@babylonjs/core/scene.js';
 import {
   ANIMATION_HOVER_DURATION,
   ANIMATION_PROPERTY,
-  ANIMATION_TOTAL_FRAME,
   TEXTURE_SIZE
 } from './BoxText.constant';
 import Font from "../../font/Font";
@@ -23,7 +23,6 @@ import Point from "../../point/Point";
 import TextureDecorator from "../texture-decorator/TextureDecorator";
 import MaterialFactory from "../material-factory/MaterialFactory";
 import {ScreenSizeObserverInterface} from "../../screen-size-observer/ScreenSizeObserver";
-import {boundMethod} from "autobind-decorator";
 
 export class BoxText implements ScreenSizeObserverInterface
 {
@@ -33,9 +32,6 @@ export class BoxText implements ScreenSizeObserverInterface
   private readonly _color: Color;
   private readonly _fontFamily: string;
   private readonly _fontType: string;
-  private readonly _animationStartCallback: any;
-  private readonly _animationHalfEndCallback: any;
-  private readonly _animationEndCallback: any;
   private _boxMeshes: Mesh[];
 
   constructor(
@@ -44,10 +40,7 @@ export class BoxText implements ScreenSizeObserverInterface
     size: number,
     color: Color,
     fontFamily: string,
-    fontType: string,
-    animationStartCallback: any,
-    animationHalfEndCallback: any,
-    animationEndCallback: any)
+    fontType: string)
   {
     this._scene = scene;
     this._boxMeshes = [];
@@ -56,9 +49,6 @@ export class BoxText implements ScreenSizeObserverInterface
     this._color = color;
     this._fontFamily = fontFamily;
     this._fontType = fontType;
-    this._animationStartCallback = animationStartCallback;
-    this._animationHalfEndCallback = animationHalfEndCallback;
-    this._animationEndCallback = animationEndCallback;
   }
 
   private static getBoxOption(size: number): any
@@ -131,10 +121,15 @@ export class BoxText implements ScreenSizeObserverInterface
     );
   }
 
-  private dispose(): void
+  public dispose(): void
   {
     this._boxMeshes.forEach((boxMesh: Mesh) =>
     {
+      // Cancel before disposal so an unfinished entrance cannot register pointer actions.
+      for (const animation of this._scene.getAllAnimatablesByTarget(boxMesh))
+      {
+        animation.stop(undefined, undefined, false, true);
+      }
       boxMesh.dispose(false, true);
     });
     this._boxMeshes.length = 0;
@@ -195,8 +190,8 @@ export class BoxText implements ScreenSizeObserverInterface
         const totalVertices: number = boxMesh.getTotalVertices();
         boxMesh.subMeshes = [];
         boxMesh.subMeshes.push(new SubMesh(0, 0, totalVertices, 7, 6, boxMesh));
+        boxMesh.subMeshes.push(new SubMesh(1, 0, totalVertices, 30, 6, boxMesh));
 
-        boxMesh.visibility = 0;
         boxMesh.doNotSyncBoundingInfo = true;
 
         this._boxMeshes.push(boxMesh);
@@ -209,41 +204,36 @@ export class BoxText implements ScreenSizeObserverInterface
 
   private animate(): void
   {
-    const boxAnimation: Animation = new Animation(
-      'boxAnimation',
-      'visibility',
-      50,
-      Animation.ANIMATIONTYPE_FLOAT,
-      Animation.ANIMATIONLOOPMODE_CONSTANT
-    );
-
-    const keys: any[] = [];
-    keys.push({
-      frame: 0,
-      value: 0
-    });
-    keys.push({
-      frame: ANIMATION_TOTAL_FRAME,
-      value: 1
-    });
-    boxAnimation.setKeys(keys);
-
-    this._boxMeshes.forEach((boxMesh: Mesh) =>
+    const ease = new CubicEase();
+    ease.setEasingMode(EasingFunction.EASINGMODE_EASEOUT);
+    this._boxMeshes.forEach((boxMesh, index) =>
     {
-      boxMesh.animations = [];
-      boxMesh.animations.push(boxAnimation);
-      this._scene.beginAnimation(boxMesh, 0, ANIMATION_TOTAL_FRAME, false, 1, () =>
+      const delay = 1 + 2 * index;
+      const endFrame = delay + 26;
+      const fold = new Animation('letter-fold', ANIMATION_PROPERTY, 60, Animation.ANIMATIONTYPE_FLOAT);
+      fold.setKeys([
+        { frame: 0, value: Math.PI / 2 },
+        { frame: delay, value: Math.PI / 2, easingFunction: ease },
+        { frame: endFrame, value: 0 },
+      ]);
+      const reveal = new Animation('letter-reveal', 'visibility', 60, Animation.ANIMATIONTYPE_FLOAT);
+      reveal.setKeys([
+        { frame: 0, value: 0 },
+        { frame: delay, value: 0 },
+        { frame: delay + 8, value: 1 },
+      ]);
+
+      boxMesh.rotation.x = Math.PI / 2;
+      boxMesh.visibility = 0;
+      this._scene.beginDirectAnimation(boxMesh, [fold, reveal], 0, endFrame, false, 1, () =>
       {
-        this.onAnimateEnd(boxMesh);
+        this.registerPointerActions(boxMesh);
       });
     });
   }
 
-  private onAnimateEnd(boxMesh: Mesh): void
+  private registerPointerActions(boxMesh: Mesh): void
   {
-    const totalVertices: number = boxMesh.getTotalVertices();
-    boxMesh.subMeshes.push(new SubMesh(1, 0, totalVertices, 30, 6, boxMesh));
-
     boxMesh.actionManager = new ActionManager(this._scene);
 
     const pointerOverAction: InterpolateValueAction = new InterpolateValueAction(
@@ -253,10 +243,8 @@ export class BoxText implements ScreenSizeObserverInterface
       Math.PI / 2,
       ANIMATION_HOVER_DURATION,
       null,
-      true,
-      this._animationHalfEndCallback
+      true
     );
-    pointerOverAction.onBeforeExecuteObservable.add(this._animationStartCallback);
     boxMesh.actionManager.registerAction(pointerOverAction);
 
     const pointerOutAction: InterpolateValueAction = new InterpolateValueAction(
@@ -266,31 +254,22 @@ export class BoxText implements ScreenSizeObserverInterface
       0,
       ANIMATION_HOVER_DURATION,
       null,
-      true,
-      this._interpolationDoneCallback
+      true
     );
     boxMesh.actionManager.registerAction(pointerOutAction);
   }
 
-  public initiate(screenSize: number): void
+  public initiate(screenSize: number, animate = true): void
   {
     this.dispose();
     this.build(screenSize);
-    this.animate();
+    if (animate) this.animate();
+    else this._boxMeshes.forEach((boxMesh) => this.registerPointerActions(boxMesh));
   }
 
   public onScreenSizeUpdate(screenSize: number): void
   {
-    this.initiate(screenSize);
-  }
-
-  @boundMethod
-  private _interpolationDoneCallback(): void
-  {
-    if (this._animationEndCallback)
-    {
-      this._animationEndCallback();
-    }
+    this.initiate(screenSize, false);
   }
 
 }

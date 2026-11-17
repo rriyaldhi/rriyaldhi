@@ -26,19 +26,7 @@ describe('Text', () =>
       1,
       color,
       'san-francisco',
-      'normal',
-      () =>
-      {
-
-      },
-      () =>
-      {
-
-      },
-      () =>
-      {
-
-      }
+      'normal'
     );
   });
 
@@ -60,8 +48,7 @@ describe('Text', () =>
   it('should be able to be disposed', () =>
   {
     text.initiate(1280);
-    // noinspection TsLint
-    text['dispose']();
+    text.dispose();
   });
 
   it('should be re-initiated when screen size changes', () =>
@@ -81,12 +68,17 @@ describe('Text', () =>
     text.onScreenSizeUpdate(667);
     expect(scene.textures.length).toBe(texturesAfterBuild);
 
-    text['dispose']();
+    text.dispose();
     expect(scene.textures.length).toBe(originalTextures);
   });
 
-  it ('should be able to run interpolation done callback', () =>
+  it('releases pointer actions when resizing before the entrance finishes', () =>
   {
-    text['_interpolationDoneCallback']();
+    const originalActions = scene.actionManagers.length;
+    text.initiate(375);
+    text.onScreenSizeUpdate(667);
+    text.dispose();
+    expect(scene.actionManagers.length).toBe(originalActions);
   });
+
 });

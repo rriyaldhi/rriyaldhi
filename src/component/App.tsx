@@ -28,7 +28,8 @@ function getActiveSection(): Section | undefined
 interface AppState
 {
   section: Section | undefined,
-  hasCanvas: boolean
+  hasCanvas: boolean,
+  hasNavigated: boolean
 }
 
 export default class App extends React.Component<{}, AppState>
@@ -37,21 +38,22 @@ export default class App extends React.Component<{}, AppState>
   private _scene: Scene;
   private _boxText: BoxText;
   private _canvasActive: boolean;
-  private _animationRunning: number;
   private _screenWidth: number;
   private readonly _screenSizeObserver: ScreenSizeObserver;
   private readonly _titleCanvas = React.createRef<HTMLCanvasElement>();
+  private readonly _menu = React.createRef<HTMLElement>();
+  private readonly _back = React.createRef<HTMLAnchorElement>();
 
   constructor(props: any)
   {
     super(props);
     this._screenSizeObserver = ScreenSizeObserverSingleton.getInstance();
-    this._canvasActive = true;
-    this._animationRunning = 0;
+    this._canvasActive = false;
     this.state =
     {
       section: getActiveSection(),
-      hasCanvas: false
+      hasCanvas: false,
+      hasNavigated: false
     }
   }
 
@@ -75,35 +77,41 @@ export default class App extends React.Component<{}, AppState>
     window.removeEventListener("resize", this._onResize);
     window.removeEventListener("focus", this._onWindowFocus);
     window.removeEventListener("blur", this._onWindowLeave);
-    if (this._boxText) this._screenSizeObserver.detach(this._boxText);
+    if (this._boxText)
+    {
+      this._screenSizeObserver.detach(this._boxText);
+      this._boxText.dispose();
+    }
     this._engine?.dispose();
   }
 
   render()
   {
-    const { section, hasCanvas } = this.state;
+    const { section, hasCanvas, hasNavigated } = this.state;
 
     return <main id="app">
-      <header className="site-header" data-section-open={!!section} data-canvas-ready={hasCanvas}>
+      <header className="site-header" data-section-open={!!section} data-canvas-ready={hasCanvas}
+        data-has-navigated={hasNavigated}>
         <canvas
           className="site-title-canvas"
           aria-hidden="true"
           ref={this._titleCanvas}
-          onMouseEnter={this._canvasMouseEnterCallback}
+          onPointerEnter={this._canvasPointerEnterCallback}
           onPointerLeave={this._canvasPointerLeaveCallback}
         />
-        <h1 className="site-name"><a href="#">rizky riyaldhi</a></h1>
-        <nav className="site-menu" aria-label="Sections">
-          {section && <a href="#"><span aria-hidden="true">←</span> Home</a>}
+        <h1 className="site-name">rizky riyaldhi</h1>
+        {section ? <a className="site-back" ref={this._back} href="#">
+          <span aria-hidden="true">←</span> Back to home
+        </a> : <nav className="site-menu" aria-label="Sections" ref={this._menu}>
           {sections.map(({ id, label }) => <a
             key={id}
             href={`#${id}`}
-            aria-current={section === id ? "page" : undefined}
           >{label}</a>)}
-        </nav>
+        </nav>}
       </header>
-      {sections.map(({ id, Content }) => <div className="site-section" key={id} hidden={section !== id}>
-        <Content />
+      {sections.map(({ id, Content }) => <div className="site-section" key={id}
+        hidden={section !== id} inert={section !== id}>
+        <Content active={section === id} />
       </div>)}
     </main>
   }
@@ -111,7 +119,18 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _onSectionChange(): void
   {
-    this.setState({ section: getActiveSection() }, () => window.scrollTo(0, 0));
+    const section = getActiveSection();
+    const previous = this.state.section;
+    if (section === previous) return;
+
+    this.setState({ section, hasNavigated: true }, () =>
+    {
+      window.scrollTo(0, 0);
+      const target = section ? this._back.current : this._menu.current?.querySelector<HTMLAnchorElement>(
+        `[href="#${previous}"]`
+      );
+      target?.focus({ preventScroll: true });
+    });
   }
 
   @boundMethod
@@ -123,11 +142,10 @@ export default class App extends React.Component<{}, AppState>
     const width = window.innerWidth;
     if (width !== this._screenWidth)
     {
-      this._animationRunning = 0;
       this._screenWidth = width;
       this._screenSizeObserver.notify(width);
     }
-    this._engine.runRenderLoop(this._renderCanvas);
+    this._renderCanvas();
   }
 
   @boundMethod
@@ -153,10 +171,7 @@ export default class App extends React.Component<{}, AppState>
       1,
       BOX_COLOR,
       FONT_FAMILY,
-      FONT_TYPE,
-      this._boxAnimationStartCallback,
-      this._boxAnimationHalfEndCallback,
-      this._boxAnimationEndCallback
+      FONT_TYPE
     );
     this._screenWidth = window.innerWidth;
     this._boxText.initiate(this._screenWidth);
@@ -168,42 +183,15 @@ export default class App extends React.Component<{}, AppState>
   @boundMethod
   private _renderCanvas(): void
   {
-    if (this && this._scene)
+    this._scene.render();
+    if (!this._canvasActive && this._scene.animatables.length === 0)
     {
-      this._scene.render();
+      this._engine.stopRenderLoop(this._renderCanvas);
     }
   }
 
   @boundMethod
-  private _boxAnimationStartCallback(): void
-  {
-    this._animationRunning++;
-  }
-
-  @boundMethod
-  private _boxAnimationHalfEndCallback(): void
-  {
-    if (window.innerWidth < 720)
-    {
-      this._boxAnimationEndCallback();
-    }
-  }
-
-  @boundMethod
-  private _boxAnimationEndCallback(): void
-  {
-    if (this._animationRunning > 0)
-    {
-      this._animationRunning--;
-    }
-    if (this._animationRunning === 0 && !this._canvasActive)
-    {
-      this._engine?.stopRenderLoop();
-    }
-  }
-
-  @boundMethod
-  private _canvasMouseEnterCallback(): void
+  private _canvasPointerEnterCallback(): void
   {
     this._canvasActive = true;
     if (this._engine)
@@ -217,22 +205,15 @@ export default class App extends React.Component<{}, AppState>
   {
     this._canvasActive = false;
     // Babylon runs its pointer-out action when picking changes. Leaving the canvas skips picking.
-    if (this._scene?.getPointerOverMesh())
-    {
-      this._scene.setPointerOverMesh(null, event.pointerId);
-    }
-    else if (this._animationRunning === 0)
-    {
-      this._engine?.stopRenderLoop();
-    }
+    this._scene?.setPointerOverMesh(null, event.pointerId);
   }
 
   @boundMethod
   private _onWindowFocus(): void
   {
-    if (this._engine)
+    if (this._canvasActive || this._scene?.animatables.length)
     {
-      this._engine.runRenderLoop(this._renderCanvas);
+      this._engine?.runRenderLoop(this._renderCanvas);
     }
   }
 

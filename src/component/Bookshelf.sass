@@ -14,7 +14,6 @@
   width: min(64rem, calc(100% - 3rem))
   margin: 0 auto
   padding: 1.25rem 0 4rem
-  border-top: 1px solid #000
 
   h2
     margin: 0 0 1.15rem
@@ -23,7 +22,7 @@
 
 .bookshelf-grid
   display: grid
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr))
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr))
   align-items: stretch
   gap: 1.5rem
   margin: 0
@@ -64,7 +63,7 @@
       filter: invert(1)
 
   .book-illustration
-    height: 7rem
+    height: clamp(7rem, 11vw, 10rem)
     min-height: 0
     width: 100%
 
@@ -141,6 +140,9 @@
 @media (prefers-reduced-motion: no-preference)
   .book-reader[data-opening-from-shelf][open]::backdrop
     animation: book-backdrop-enter 420ms ease-out
+
+  .book-reader[data-closing][open]::backdrop
+    animation: book-backdrop-enter 300ms ease-out reverse both
 
 @keyframes book-backdrop-enter
   from

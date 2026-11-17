@@ -6,14 +6,27 @@ interface BookReaderProps
 {
   book: Book;
   startPage: number;
-  openingOrigin: DOMRect | null;
+  cover: HTMLButtonElement;
+  active: boolean;
   onClose: (page: number) => void;
 }
 
-export default function BookReader({ book, startPage, openingOrigin, onClose }: BookReaderProps)
+function coverTransform(cover: DOMRect, reader: DOMRect)
+{
+  const x = cover.left + cover.width / 2 - (reader.left + reader.width / 2);
+  const y = cover.top + cover.height / 2 - (reader.top + reader.height / 2);
+  const scale = Math.min(cover.width / reader.width, cover.height / reader.height, 0.8);
+  return `perspective(1200px) translate(${x}px, ${y}px) rotateY(-24deg) scale(${scale})`;
+}
+
+const readerOpen = 'perspective(1200px) translate(0, 0) rotateY(0deg) scale(1)';
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+export default function BookReader({ book, startPage, cover, active, onClose }: BookReaderProps)
 {
   const dialog = React.useRef<HTMLDialogElement>(null);
   const reading = React.useRef<HTMLDivElement>(null);
+  const motion = React.useRef<Animation>(null);
   const titleId = React.useId();
   const { pages } = book;
   const [{ current, previous }, setPage] = React.useState({ current: startPage, previous: startPage });
@@ -21,19 +34,45 @@ export default function BookReader({ book, startPage, openingOrigin, onClose }: 
   React.useLayoutEffect(() => {
     const reader = dialog.current;
     reader.showModal();
-    if (!openingOrigin || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!reducedMotion())
+    {
+      motion.current = reader.animate([
+        { transform: coverTransform(cover.getBoundingClientRect(), reader.getBoundingClientRect()) },
+        { transform: readerOpen },
+      ], { duration: 420, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
+    }
+    return () => motion.current?.cancel();
+  }, [cover]);
 
-    const bounds = reader.getBoundingClientRect();
-    const x = openingOrigin.left + openingOrigin.width / 2 - (bounds.left + bounds.width / 2);
-    const y = openingOrigin.top + openingOrigin.height / 2 - (bounds.top + bounds.height / 2);
-    const scale = Math.min(openingOrigin.width / bounds.width, openingOrigin.height / bounds.height, 0.8);
-    const animation = reader.animate([
-      { transform: `perspective(1200px) translate(${x}px, ${y}px) rotateY(-28deg) scale(${scale})` },
-      { transform: 'perspective(1200px) translate(0, 0) rotateY(0deg) scale(1)' },
-    ], { duration: 420, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
+  React.useLayoutEffect(() => {
+    const reader = dialog.current;
+    if (!active && reader.open)
+    {
+      motion.current?.cancel();
+      reader.close();
+    }
+  }, [active]);
 
-    return () => animation.cancel();
-  }, [openingOrigin]);
+  function closeReader()
+  {
+    const reader = dialog.current;
+    if (reader.hasAttribute('data-closing')) return;
+    if (reducedMotion())
+    {
+      reader.close();
+      return;
+    }
+
+    const currentTransform = getComputedStyle(reader).transform;
+    motion.current?.cancel();
+    const origin = coverTransform(cover.getBoundingClientRect(), reader.getBoundingClientRect());
+    reader.setAttribute('data-closing', '');
+    motion.current = reader.animate([
+      { transform: currentTransform === 'none' ? readerOpen : currentTransform },
+      { transform: origin, opacity: 0 },
+    ], { duration: 300, easing: 'cubic-bezier(0.4, 0, 0.65, 1)', fill: 'forwards' });
+    motion.current.onfinish = () => reader.close();
+  }
 
   React.useLayoutEffect(() => {
     // On narrow screens the cover sits above the page. Start each turn at the reading area.
@@ -42,6 +81,7 @@ export default function BookReader({ book, startPage, openingOrigin, onClose }: 
 
   function turnPage(direction: -1 | 1)
   {
+    if (dialog.current.hasAttribute('data-closing')) return;
     setPage((page) => {
       const next = page.current + direction;
       return next < 0 || next >= pages.length
@@ -65,16 +105,20 @@ export default function BookReader({ book, startPage, openingOrigin, onClose }: 
   return <dialog
     ref={dialog}
     className="book-reader"
-    data-opening-from-shelf={openingOrigin ? '' : undefined}
+    data-opening-from-shelf=""
     aria-labelledby={titleId}
     onKeyDown={handleKeyDown}
+    onCancel={(event) => {
+      event.preventDefault();
+      closeReader();
+    }}
     onClose={() => onClose(current)}
   >
     <button
       type="button"
       className="book-close"
       aria-label="Close book"
-      onClick={() => dialog.current.close()}
+      onClick={closeReader}
     >
       ×
     </button>

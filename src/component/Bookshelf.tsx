@@ -5,9 +5,9 @@ import { books } from "./books";
 import type { Book } from "./books";
 import "./Bookshelf.sass";
 
-export default function Bookshelf()
+export default function Bookshelf({ active }: { active: boolean })
 {
-  const [selection, setSelection] = React.useState<{ book: Book; origin: DOMRect | null } | null>(null);
+  const [selection, setSelection] = React.useState<{ book: Book; cover: HTMLButtonElement } | null>(null);
   const [lastPages, setLastPages] = React.useState<Record<string, number>>({});
   const activeBook = selection?.book;
 
@@ -32,7 +32,7 @@ export default function Bookshelf()
             event.currentTarget.focus();
             setSelection({
               book,
-              origin: event.detail > 0 ? event.currentTarget.getBoundingClientRect() : null,
+              cover: event.currentTarget,
             });
           }}
         >
@@ -49,7 +49,8 @@ export default function Bookshelf()
     {activeBook && <BookReader
       key={activeBook.id}
       book={activeBook}
-      openingOrigin={selection.origin}
+      cover={selection.cover}
+      active={active}
       startPage={lastPages[activeBook.id] ?? 0}
       onClose={closeBook}
     />}

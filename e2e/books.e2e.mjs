@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { countDarkPixels } from './darkPixels.mjs';
 
 async function expectSingleLine(heading) {
   await expect(heading).toBeVisible();
@@ -7,6 +8,13 @@ async function expectSingleLine(heading) {
     range.selectNodeContents(element);
     return range.getClientRects().length;
   })).toBe(1);
+}
+
+async function expectPaintedIllustration(page, illustration) {
+  await expect(illustration).toBeInViewport({ ratio: 1 });
+  const clip = await illustration.boundingBox();
+  const darkPixels = await countDarkPixels(page, { clip, animations: 'disabled', scale: 'css' }, 96);
+  expect(darkPixels).toBeGreaterThan(100);
 }
 
 test.beforeEach(async ({ page, baseURL }) => {
@@ -105,6 +113,8 @@ for (const [orientation, viewport] of [
         await page.getByRole('button', { name: `Read ${title}` }).tap();
         const book = page.getByRole('dialog', { name: title });
         const controls = book.getByRole('group', { name: 'Book pages' });
+        const illustration = book.getByRole('img');
+        const firstImage = await illustration.getAttribute('src');
 
         await controls.getByRole('button', { name: 'Next page' }).tap();
         await expect(controls.getByRole('status')).toHaveText('Page 2 of 3');
@@ -114,6 +124,9 @@ for (const [orientation, viewport] of [
           const bounds = await heading.boundingBox();
           return bounds.y + bounds.height <= (await controls.boundingBox()).y;
         }).toBe(true);
+        await expect(illustration).not.toHaveAttribute('src', firstImage);
+        await expect.poll(() => illustration.evaluate((image) => image.naturalWidth)).toBeGreaterThan(0);
+        await expectPaintedIllustration(page, illustration);
       });
     }
   });

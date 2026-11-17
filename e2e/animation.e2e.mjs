@@ -1,24 +1,5 @@
 import { expect, test } from '@playwright/test';
-
-async function countDarkPixels(page, clip) {
-  const screenshot = await page.screenshot({ clip });
-  return page.evaluate(async (image) => {
-    const bytes = Uint8Array.from(atob(image), (character) => character.charCodeAt(0));
-    const bitmap = await createImageBitmap(new Blob([bytes], { type: 'image/png' }));
-    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-    const context = canvas.getContext('2d');
-    context.drawImage(bitmap, 0, 0);
-    bitmap.close();
-    const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
-    let darkPixels = 0;
-    for (let index = 0; index < data.length; index += 4) {
-      if (data[index] < 32 && data[index + 1] < 32 && data[index + 2] < 32) {
-        darkPixels++;
-      }
-    }
-    return darkPixels;
-  }, screenshot.toString('base64'));
-}
+import { countDarkPixels } from './darkPixels.mjs';
 
 test('a 3D letter flips to its dark face on hover and returns when the pointer leaves', async ({ page, baseURL }) => {
   const pageErrors = [];
@@ -37,7 +18,7 @@ test('a 3D letter flips to its dark face on hover and returns when the pointer l
   expect(y, 'The 3D title is near the top of the page').toBeLessThan(120);
   // Sample the inside of a single near-center letter's face.
   const face = { x: x - 12, y: y - 12, width: 24, height: 24 };
-  const darkPixels = () => countDarkPixels(page, face);
+  const darkPixels = () => countDarkPixels(page, { clip: face });
 
   await expect.poll(darkPixels, { message: 'The front of the letter is visible' }).toBeGreaterThan(5);
   const front = await darkPixels();

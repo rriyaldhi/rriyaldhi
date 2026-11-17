@@ -59,7 +59,9 @@
   &:hover
     background: #000
     color: #fff
-    --illustration-invert: 1
+
+    img
+      filter: invert(1)
 
   .book-illustration
     height: 7rem
@@ -246,27 +248,9 @@
     display: block
     max-width: 100%
     height: 100%
-    object-fit: contain
-    filter: grayscale(1) invert(var(--illustration-invert, 0))
-
-  > img
     min-height: 0
     max-height: 100%
-
-// Optional crop for multiple illustrations in the same image.
-.book-crop
-  position: relative
-  height: 100%
-  max-width: 100%
-  overflow: hidden
-
-  img
-    position: absolute
-    top: 0
-    left: 0
-    width: auto
-    max-width: none
-    height: 100%
+    object-fit: contain
 
 .book-source
   display: inline-block

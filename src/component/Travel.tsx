@@ -9,6 +9,7 @@ const mapWidth = 1000;
 const mapHeight = 480;
 const zoom = 2.75;
 const visitedByCode = new Map(visitedCountries.map(country => [country.code, country]));
+const outlinedCountries = new Set(worldCountries.map(([code]) => code));
 
 function mapPoint([longitude, latitude]: VisitedCountry["marker"])
 {
@@ -75,18 +76,21 @@ export default function Travel({ active }: { active: boolean })
               onClick={isSelectable ? () => setActiveCountry(country) : undefined}
             />;
           })}
+          {visitedCountries.filter(country => !outlinedCountries.has(country.code)).map(country => {
+            const [x, y] = mapPoint(country.marker);
+            return <circle key={country.code} cx={x} cy={y} r={2.5} className="travel-map-visited"
+              data-country={country.code} onClick={() => setActiveCountry(country)} />;
+          })}
         </g>
       </svg>
+      <div className={`travel-map-markers${activeCountry ? " travel-map-markers-selected" : ""}`}>
       {(activeCountry ? [activeCountry] : visitedCountries).map(country => {
-        const [x, y] = mapPoint(country.marker);
-        const left = activeCountry ? 50 : x / mapWidth * 100;
-        const top = activeCountry ? 50 : y / mapHeight * 100;
         return <button
           key={country.code}
           type="button"
           className="travel-map-marker"
           data-country={country.code}
-          style={{ left: `${left}%`, top: `${top}%` }}
+          style={{ left: "50%", top: "50%" }}
           aria-expanded={activeCountry === country}
           aria-controls="travel-places"
           onClick={() => activeCountry === country ? returnToWorldMap() : setActiveCountry(country)}
@@ -94,6 +98,7 @@ export default function Travel({ active }: { active: boolean })
           {country.name}
         </button>;
       })}
+      </div>
     </div>
     <div className="travel-map-caption">
       <span className="travel-map-legend">Visited</span>

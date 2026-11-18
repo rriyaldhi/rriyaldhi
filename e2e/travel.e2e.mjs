@@ -71,3 +71,40 @@ test('opens the country with the keyboard on a narrow viewport', async ({ page }
   await expect(travel.getByRole('heading', { name: 'Great Wall of China', exact: true })).toBeVisible();
   expect(await travel.evaluate(element => element.scrollWidth)).toBeLessThanOrEqual(375);
 });
+
+for (const width of [1100, 375]) {
+  test(`all visited countries and landmarks are accessible at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 812 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/#travel');
+    const travel = page.getByRole('region', { name: 'Travel', exact: true });
+    const entries = [
+      ['China', ['Terracotta Army', 'Great Wall of China']],
+      ['Indonesia', ['Borobudur', 'Prambanan']],
+      ['Singapore', ['Buddha Tooth Relic Temple']],
+      ['Germany', ['Berlin Wall', 'Brandenburg Gate']],
+      ['Australia', ['Sydney Opera House']],
+      ['Italy', ['Colosseum', 'Leaning Tower of Pisa', 'Venice']],
+      ['Monaco', ['Monte Carlo Casino']],
+      ['Vatican City', ['St. Peter’s Basilica']],
+      ['Andorra', ['Andorra la Vella']],
+      ['Spain', ['Sagrada Família']],
+    ];
+    await expect(travel.locator('.travel-map-marker')).toHaveCount(10);
+    for (const [country, landmarks] of entries) {
+      const button = travel.getByRole('button', { name: country, exact: true });
+      await button.click();
+      await expect(travel.getByRole('heading', { name: country, exact: true })).toBeFocused();
+      for (const landmark of landmarks) {
+        await expect(travel.getByRole('heading', { name: landmark, exact: true })).toBeVisible();
+      }
+      for (const image of await travel.getByRole('img').all()) {
+        await image.scrollIntoViewIfNeeded();
+        await expect.poll(() => image.evaluate(element => element.naturalWidth)).toBeGreaterThan(0);
+      }
+      expect(await travel.evaluate(element => element.scrollWidth)).toBeLessThanOrEqual(width);
+      await travel.getByRole('button', { name: 'Back to world map' }).click();
+      await expect(button).toBeFocused();
+    }
+  });
+}

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack serve --config webpack.config.dev.js",
     "build:dev": "webpack --config webpack.config.dev.js",
-    "build:prod": "webpack --config webpack.config.prod.js",
+    "build:prod": "webpack --config webpack.config.prod.js && node scripts/prepare-search.mjs",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage",
     "test:e2e": "playwright test"
   },

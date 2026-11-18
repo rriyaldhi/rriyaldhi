@@ -31,6 +31,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pages: write
       id-token: write
     environment:
@@ -40,3 +41,14 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+      - name: Notify search engines through IndexNow
+        id: indexnow
+        continue-on-error: true
+        run: node scripts/notify-indexnow.mjs
+      - name: Report IndexNow notification failure
+        if: steps.indexnow.outcome == 'failure'
+        run: echo '::warning::The site deployed successfully, but its IndexNow notification failed. Check this step and retry the notification.'

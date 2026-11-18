@@ -16,7 +16,7 @@ html, body
   color: #000
   background: #fff
 
-body:has(.book-reader[open])
+html:has(.book-reader[open]), body:has(.book-reader[open])
   overflow: hidden
 
 ::selection
@@ -53,8 +53,9 @@ body:has(.book-reader[open])
 
 .site-title-canvas
   visibility: hidden
-  width: 100%
-  height: min(50vh, 88vw)
+  width: calc(100% * var(--title-scale))
+  height: calc(min(50vh, 88vw) * var(--title-scale))
+  transform: translate(-50%, -50%)
   touch-action: pan-y
   user-select: none
 
@@ -72,50 +73,125 @@ body:has(.book-reader[open])
   top: 50%
   left: clamp(1.5rem, 5vw, 5rem)
   display: grid
-  justify-items: start
+  justify-items: stretch
   transform: translateY(-50%)
 
-.site-back
-  position: absolute
-  top: 0.75rem
-  left: max(1.5rem, calc((100% - 64rem) / 2))
+.site-section-nav
+  --cube-height: 2.75rem
+  position: fixed
+  top: 50%
+  left: clamp(1rem, 2vw, 2rem)
+  z-index: 2
+  display: grid
+  gap: 0.5rem
+  width: max-content
+  transform: translateY(calc(-100% + var(--cube-height) / 2))
 
-.site-menu a, .site-back
-  display: flex
-  align-items: center
-  gap: 0.55rem
-  min-height: 2.75rem
-  color: #383838
+.site-section-title
+  margin: 0
+
+.site-menu a, .site-back, .site-section-title, .travel .travel-world-back
+  --cube-height: 2.75rem
+  display: block
+  height: var(--cube-height)
+  perspective: 600px
+  color: #000
   font: 600 0.83rem/1 'Quicksand', sans-serif
   letter-spacing: 0.13em
   text-transform: uppercase
   text-decoration: none
-  text-underline-offset: 0.42em
 
-  &:hover
-    color: #000
-    text-decoration: underline
+.nav-cube
+  position: relative
+  pointer-events: none
+  display: block
+  height: 100%
+  transform-style: preserve-3d
+  transform: translateZ(calc(var(--cube-height) / -2))
 
-.site-header a:focus-visible
+.nav-cube-face
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 0.55rem
+  box-sizing: border-box
+  height: 100%
+  padding: 0 1rem
+  backface-visibility: hidden
+  white-space: nowrap
+
+.nav-cube-front
+  background: #fff
+  transform: translateZ(calc(var(--cube-height) / 2))
+
+.nav-cube-bottom
+  position: absolute
+  inset: 0
+  background: #000
+  color: #fff
+  transform: rotateX(-90deg) translateZ(calc(var(--cube-height) / 2))
+
+.site-menu a:hover, .site-menu a:focus-visible, .site-back:hover, .site-back:focus-visible, .site-section-title, .travel-world-back:hover, .travel-world-back:focus-visible
+  .nav-cube
+    transform: translateZ(calc(var(--cube-height) / -2)) rotateX(90deg)
+
+.site-header a:focus-visible, .site-back:focus-visible
   outline: 2px solid #000
   outline-offset: 4px
 
+// Keep the side control clear of the centered content when space is limited.
+@media (max-width: 1320px)
+  .site-section-nav
+    top: 0.75rem
+    transform: none
+
 @media (max-width: 760px), (max-aspect-ratio: 1 / 1)
   .site-header[data-section-open='true']
-    --title-offset: 1rem
+    height: 9rem
+    --title-offset: 0rem
     --title-scale: 0.78
 
   .site-menu
     top: 0.75rem
-    grid-auto-flow: column
-    gap: 1.4rem
     transform: none
 
+  .site-menu
+    grid-auto-flow: column
+    grid-auto-columns: 1fr
+    gap: 0.4rem
+
+  .site-section-nav
+    position: relative
+    top: auto
+    left: auto
+    width: min(56rem, calc(100% - 3rem))
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    margin: 0.75rem auto 1.5rem
+    transform: none
+
+    .site-section-title, .site-back
+      min-width: 0
+      font-size: clamp(0.6rem, 2.5vw, 0.78rem)
+      letter-spacing: 0.08em
+
+    .nav-cube-face
+      gap: 0.25rem
+      padding: 0 0.4rem
+
+  .site-section > section
+    padding-top: 1.5rem
+
 @media (prefers-reduced-motion: no-preference)
+  .nav-cube
+    transition: transform 250ms linear
+
+  .site-title-canvas
+    transition: top var(--header-duration) var(--header-easing), width var(--header-duration) var(--header-easing), height var(--header-duration) var(--header-easing)
+
   .site-header
     transition: height var(--header-duration) var(--header-easing)
 
-  .site-title-canvas, .site-name
+  .site-name
     transition: top var(--header-duration) var(--header-easing), transform var(--header-duration) var(--header-easing)
 
   .site-header[data-has-navigated='true']
@@ -136,7 +212,7 @@ body:has(.book-reader[open])
     &::before
       animation: section-rule 380ms cubic-bezier(0.22, 1, 0.36, 1) 130ms both
 
-    > h2, .bookshelf-grid > li
+    .bookshelf-grid > li
       animation: section-rise 430ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 140ms) both
 
     .bookshelf-grid > li
@@ -150,6 +226,7 @@ body:has(.book-reader[open])
 
 .site-section > section
   position: relative
+  padding-top: 3rem
 
   &::before
     position: absolute

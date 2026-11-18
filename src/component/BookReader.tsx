@@ -1,5 +1,6 @@
 import * as React from "react";
 import BookCover from "./BookCover";
+import CubeLabel from "./CubeLabel";
 import BookIllustration from "./BookIllustration";
 import type { Book } from "./books";
 
@@ -121,11 +122,6 @@ export default function BookReader({ book, startPage, cover, active, onClose }: 
     moveCover('reverse');
   }
 
-  React.useLayoutEffect(() => {
-    // On narrow screens the cover sits above the page. Start each turn at the reading area.
-    dialog.current.scrollTop = current === previous ? 0 : reading.current.offsetTop;
-  }, [current, previous]);
-
   function turnPage(direction: -1 | 1)
   {
     if (dialog.current.hasAttribute('data-closing')) return;
@@ -172,7 +168,7 @@ export default function BookReader({ book, startPage, cover, active, onClose }: 
         aria-label="Close book"
         onClick={closeReader}
       >
-        ×
+        <CubeLabel>×</CubeLabel>
       </button>
       <header className="book-cover" data-long-title={book.title.length > 12 || undefined}>
         <h2 id={titleId}>{book.title}</h2>
@@ -207,11 +203,11 @@ export default function BookReader({ book, startPage, cover, active, onClose }: 
         </div>
         <div className="book-controls" role="group" aria-label="Book pages">
           <button type="button" aria-label="Previous page" aria-disabled={current === 0} onClick={() => turnPage(-1)}>
-            <span aria-hidden="true">←</span> Previous
+            <CubeLabel><span aria-hidden="true">←</span> Previous</CubeLabel>
           </button>
           <span role="status">Page {current + 1} of {pages.length}</span>
           <button type="button" aria-label="Next page" aria-disabled={current === pages.length - 1} onClick={() => turnPage(1)}>
-            Next <span aria-hidden="true">→</span>
+            <CubeLabel>Next <span aria-hidden="true">→</span></CubeLabel>
           </button>
         </div>
       </div>

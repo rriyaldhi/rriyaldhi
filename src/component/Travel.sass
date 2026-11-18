@@ -1,6 +1,6 @@
 .travel
   box-sizing: border-box
-  width: min(64rem, calc(100% - 3rem))
+  width: min(56rem, calc(100% - 3rem))
   margin: 0 auto
   padding: 1.25rem 0 4rem
   color: #151515
@@ -26,6 +26,7 @@
     outline-offset: 3px
 
 .travel-map
+  scroll-margin-top: 1.5rem
   position: relative
   overflow: hidden
   border: 1px solid #151515
@@ -129,6 +130,13 @@
     height: 0.65rem
     background: #171717
 
+#travel-places
+  scroll-margin-top: 1.5rem
+
+.travel .travel-world-back
+  padding: 0
+  border: 0
+
 .travel-country-heading
   display: flex
   flex-wrap: wrap
@@ -142,12 +150,8 @@
   h3
     font-size: clamp(1.9rem, 3vw, 2.65rem)
 
-  button
-    padding: 0.5rem 0.75rem
-
-    &:hover
-      background: #151515
-      color: #fff
+    &:focus
+      outline: none
 
 .travel-postcards
   display: grid
@@ -206,6 +210,14 @@
 
     &::before
       width: 0.3rem
+
+@media (max-width: 1320px), (max-aspect-ratio: 1 / 1)
+  #travel-places, .travel-map
+    scroll-margin-top: 8rem
+
+@media (max-width: 760px), (max-aspect-ratio: 1 / 1)
+  #travel-places, .travel-map
+    scroll-margin-top: 1.5rem
 
 @media (prefers-reduced-motion: reduce)
   .travel-map-camera, .travel-map-marker

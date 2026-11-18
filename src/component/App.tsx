@@ -2,6 +2,7 @@ import * as React from "react";
 import "./App.sass";
 import Bookshelf from "./Bookshelf";
 import Travel from "./Travel";
+import CubeLabel from "./CubeLabel";
 import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera.js';
 import { Engine } from '@babylonjs/core/Engines/engine.js';
 import { Color4 } from '@babylonjs/core/Maths/math.color.js';
@@ -39,6 +40,7 @@ export default class App extends React.Component<{}, AppState>
   private _boxText: BoxText;
   private _canvasActive: boolean;
   private _screenWidth: number;
+  private _canvasSizeObserver: ResizeObserver;
   private readonly _screenSizeObserver: ScreenSizeObserver;
   private readonly _titleCanvas = React.createRef<HTMLCanvasElement>();
   private readonly _menu = React.createRef<HTMLElement>();
@@ -77,6 +79,7 @@ export default class App extends React.Component<{}, AppState>
     window.removeEventListener("resize", this._onResize);
     window.removeEventListener("focus", this._onWindowFocus);
     window.removeEventListener("blur", this._onWindowLeave);
+    this._canvasSizeObserver?.disconnect();
     if (this._boxText)
     {
       this._screenSizeObserver.detach(this._boxText);
@@ -100,15 +103,21 @@ export default class App extends React.Component<{}, AppState>
           onPointerLeave={this._canvasPointerLeaveCallback}
         />
         <h1 className="site-name">rizky riyaldhi</h1>
-        {section ? <a className="site-back" ref={this._back} href="#">
-          <span aria-hidden="true">←</span> Back to home
-        </a> : <nav className="site-menu" aria-label="Sections" ref={this._menu}>
+        {!section && <nav className="site-menu" aria-label="Sections" ref={this._menu}>
           {sections.map(({ id, label }) => <a
             key={id}
             href={`#${id}`}
-          >{label}</a>)}
+          ><CubeLabel>{label}</CubeLabel></a>)}
         </nav>}
       </header>
+      {section && <div className="site-section-nav">
+        <h2 className="site-section-title" id={`${section}-heading`}>
+          <CubeLabel>{sections.find(({ id }) => id === section).label}</CubeLabel>
+        </h2>
+        <a className="site-back" ref={this._back} href="#">
+          <CubeLabel><span aria-hidden="true">←</span> Back to home</CubeLabel>
+        </a>
+      </div>}
       {sections.map(({ id, Content }) => <div className="site-section" key={id}
         hidden={section !== id} inert={section !== id}>
         <Content active={section === id} />
@@ -180,6 +189,9 @@ export default class App extends React.Component<{}, AppState>
     {
       this.setState({ hasCanvas: true }, () => this._engine.runRenderLoop(this._renderCanvas));
     });
+    // Keep Babylon's picking coordinates aligned with the title as the header shrinks.
+    this._canvasSizeObserver = new ResizeObserver(this._onResize);
+    this._canvasSizeObserver.observe(canvas);
   }
 
   @boundMethod

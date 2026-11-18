@@ -18,7 +18,6 @@ export default function Bookshelf({ active }: { active: boolean })
   }
 
   return <section className="bookshelf" aria-labelledby="books-heading">
-    <h2 id="books-heading">Books</h2>
     <ul className="bookshelf-grid">
       {books.map((book) => <li key={book.id}>
         <button
@@ -37,7 +36,12 @@ export default function Bookshelf({ active }: { active: boolean })
             });
           }}
         >
-          <BookCover book={book} authorId={`book-author-${book.id}`} />
+          <span className="book-card-object">
+            <span className="book-card-pages" aria-hidden="true" />
+            <span className="book-card-cover">
+              <BookCover book={book} authorId={`book-author-${book.id}`} />
+            </span>
+          </span>
         </button>
       </li>)}
     </ul>

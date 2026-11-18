@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 test('the world map tilts into view and settles flat', async ({ page }) => {
-  await page.setViewportSize({ width: 900, height: 430 });
+  // Keep the narrower map partly below the fold beside the navigation rail.
+  await page.setViewportSize({ width: 900, height: 350 });
   await page.goto('/#travel');
   const frame = page.locator('.travel-map');
   await expect.poll(() => frame.evaluate((map) => {
@@ -21,6 +22,9 @@ test('opens China from its map shape and returns to the world map', async ({ pag
   await expect(china).toHaveAttribute('aria-expanded', 'false');
   await travel.locator('path[data-country="CHN"]').click();
   await expect(china).toHaveAttribute('aria-expanded', 'true');
+  const heading = travel.getByRole('heading', { name: 'China', exact: true });
+  await expect(heading).toBeFocused();
+  await expect(heading).toBeInViewport();
 
   for (const name of ['Terracotta Army', 'Great Wall of China']) {
     await expect(travel.getByRole('heading', { name, exact: true })).toBeVisible();
@@ -30,10 +34,27 @@ test('opens China from its map shape and returns to the world map', async ({ pag
     await expect.poll(() => image.evaluate(element => element.naturalWidth)).toBeGreaterThan(0);
   }
 
-  await travel.getByRole('button', { name: 'Back to world map' }).click();
+  const back = travel.getByRole('button', { name: 'Back to world map' });
+  await back.hover();
+  await expect.poll(() => back.locator('.nav-cube').evaluate(element =>
+    Math.abs(new DOMMatrixReadOnly(getComputedStyle(element).transform).m22),
+  )).toBeLessThan(0.01);
+  await back.click();
   await expect(china).toBeFocused();
   await expect(china).toHaveAttribute('aria-expanded', 'false');
   await expect(travel.getByRole('heading', { name: 'Terracotta Army' })).toHaveCount(0);
+});
+
+test('returning to Travel resets the selected country and historical sites', async ({ page }) => {
+  await page.goto('/#travel');
+  const china = page.getByRole('button', { name: 'China', exact: true });
+  await china.click();
+  await expect(china).toHaveAttribute('aria-expanded', 'true');
+  await page.getByRole('link', { name: 'Back to home' }).click();
+  await page.getByRole('navigation').getByRole('link', { name: 'Travel', exact: true }).click();
+  await expect(china).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.getByRole('heading', { name: 'Terracotta Army', exact: true })).toHaveCount(0);
+  await expect(page.locator('#travel-places')).toBeHidden();
 });
 
 test('opens the country with the keyboard on a narrow viewport', async ({ page }) => {

@@ -36,3 +36,47 @@ test('a 3D letter flips to its dark face on hover and returns when the pointer l
   }).toBeLessThan(25);
   expect(pageErrors).toEqual([]);
 });
+
+for (const section of ['books', 'travel']) {
+  test(`the name still flips on hover in ${section}`, async ({ page, baseURL }) => {
+    await page.route('**/*', (route) =>
+      new URL(route.request().url()).origin === baseURL ? route.continue() : route.abort());
+    await page.goto(`/#${section}`);
+    const canvas = page.locator('.site-title-canvas');
+    await expect(canvas).toBeVisible();
+    const bounds = await canvas.boundingBox();
+    const x = Math.round(bounds.x + bounds.width / 2 + 16);
+    const y = Math.round(bounds.y + bounds.height / 2);
+    const face = { x: x - 8, y: y - 8, width: 16, height: 16 };
+    const darkPixels = () => countDarkPixels(page, { clip: face });
+    await expect.poll(darkPixels).toBeGreaterThan(2);
+    const front = await darkPixels();
+    await expect.poll(async () => {
+      await page.mouse.move(x - 1, y);
+      await page.mouse.move(x, y);
+      return darkPixels();
+    }).toBeGreaterThan(front + 65);
+    await page.mouse.move(8, 8);
+    await expect.poll(async () => Math.abs(await darkPixels() - front)).toBeLessThan(20);
+  });
+}
+
+test('navigation flips as whole equal-width cubes and home sits closer to the left edge', async ({ page }) => {
+  await page.goto('/');
+  const books = page.getByRole('link', { name: 'Books', exact: true });
+  const travel = page.getByRole('link', { name: 'Travel', exact: true });
+  const bounds = await books.boundingBox();
+  expect((await travel.boundingBox()).width).toBe(bounds.width);
+  const front = await countDarkPixels(page, { clip: bounds });
+  await books.hover();
+  await expect.poll(() => countDarkPixels(page, { clip: bounds })).toBeGreaterThan(bounds.width * bounds.height * 0.65);
+  await page.mouse.move(8, 8);
+  await expect.poll(async () => Math.abs(await countDarkPixels(page, { clip: bounds }) - front)).toBeLessThan(25);
+  await books.click();
+  const home = page.getByRole('link', { name: 'Back to home' });
+  await expect(home).toBeVisible();
+  expect((await home.boundingBox()).x).toBeLessThan(bounds.x);
+  await home.hover();
+  const homeBounds = await home.boundingBox();
+  await expect.poll(() => countDarkPixels(page, { clip: homeBounds })).toBeGreaterThan(homeBounds.width * homeBounds.height * 0.65);
+});

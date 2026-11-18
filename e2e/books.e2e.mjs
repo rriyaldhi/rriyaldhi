@@ -23,6 +23,29 @@ test.beforeEach(async ({ page, baseURL }) => {
   );
 });
 
+test('a shelf book opens partway on hover and closes when the pointer leaves', async ({ page }) => {
+  await page.goto('/#books');
+  const book = page.getByRole('button', { name: 'Read Sapiens' });
+  const cover = book.locator('.book-card-cover');
+  const pages = book.locator('.book-card-pages');
+  await book.hover();
+  await expect.poll(async () => {
+    const front = await cover.boundingBox();
+    const paper = await pages.boundingBox();
+    return paper.x + paper.width - (front.x + front.width);
+  }).toBeGreaterThan(25);
+  await page.mouse.move(8, 8);
+  await expect.poll(() => cover.evaluate(element => {
+    const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+    return Math.abs(matrix.m13);
+  })).toBeLessThan(0.01);
+  await book.focus();
+  await expect.poll(() => cover.evaluate(element => {
+    const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+    return Math.abs(matrix.m13);
+  })).toBeGreaterThan(0.5);
+});
+
 test('opens the illustrated shelf cover and inverts buttons on hover', async ({ page }) => {
   await page.goto('/#books');
   const shelf = page.getByRole('region', { name: 'Books' });
@@ -55,6 +78,15 @@ test('opens the illustrated shelf cover and inverts buttons on hover', async ({ 
   await next.hover();
   await expect(next).toHaveCSS('background-color', 'rgb(0, 0, 0)');
   await expect(next).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await next.click();
+  const previous = book.getByRole('button', { name: 'Previous page' });
+  await previous.hover();
+  await expect.poll(() => previous.locator('.nav-cube').evaluate(element =>
+    Math.abs(new DOMMatrixReadOnly(getComputedStyle(element).transform).m22),
+  )).toBeLessThan(0.01);
+  await previous.click();
+  await expect(book.getByRole('status')).toHaveText('Page 1 of 3');
+  await expect(book).not.toHaveAttribute('data-cover-motion');
   await book.getByRole('button', { name: 'Close book' }).click();
   await expect(book).toBeHidden();
   expect((await coverMotion()).map(({ direction }) => direction)).toEqual(['normal', 'reverse']);
@@ -193,7 +225,7 @@ test('reads the climate book and keeps its page position separate from Sapiens',
   expect(await climateBook.evaluate((dialog) => {
     dialog.scrollTop = dialog.scrollHeight;
     return dialog.scrollTop;
-  })).toBeGreaterThan(0);
+  })).toBe(0);
 
   for (const heading of ['Why net zero?', 'Beyond clean power', 'The Green Premium']) {
     const pageHeading = climateBook.getByRole('heading', { name: heading });

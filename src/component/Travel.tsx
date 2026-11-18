@@ -1,4 +1,5 @@
 import * as React from "react";
+import CubeLabel from "./CubeLabel";
 import { worldCountries } from "../resource/map/worldCountries";
 import { visitedCountries } from "./visitedCountries";
 import type { VisitedCountry } from "./visitedCountries";
@@ -14,27 +15,42 @@ function mapPoint([longitude, latitude]: VisitedCountry["marker"])
   return [500 + 2.6 * longitude, 244 - 2.4 * latitude] as const;
 }
 
-export default function Travel()
+export default function Travel({ active }: { active: boolean })
 {
   const [activeCountry, setActiveCountry] = React.useState<VisitedCountry | null>(null);
   const countryHeading = React.useRef<HTMLHeadingElement>(null);
   const map = React.useRef<HTMLDivElement>(null);
+  const places = React.useRef<HTMLDivElement>(null);
   const [focusX, focusY] = activeCountry ? mapPoint(activeCountry.marker) : [mapWidth / 2, mapHeight / 2];
   const scale = activeCountry ? zoom : 1;
 
   React.useEffect(() => {
-    if (activeCountry) countryHeading.current?.focus();
-  }, [activeCountry]);
+    if (!active) setActiveCountry(null);
+  }, [active]);
+
+  React.useEffect(() => {
+    if (active && activeCountry)
+    {
+      countryHeading.current?.focus({ preventScroll: true });
+      places.current?.scrollIntoView({
+        block: 'start',
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      });
+    }
+  }, [active, activeCountry]);
 
   function returnToWorldMap()
   {
     const marker = map.current?.querySelector<HTMLButtonElement>(`button[data-country="${activeCountry.code}"]`);
     setActiveCountry(null);
-    marker?.focus();
+    marker?.focus({ preventScroll: true });
+    map.current?.scrollIntoView({
+      block: 'start',
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    });
   }
 
   return <section className="travel" aria-labelledby="travel-heading">
-    <h2 id="travel-heading">Travel</h2>
     <div ref={map} className="travel-map">
       <svg viewBox={`0 0 ${mapWidth} ${mapHeight}`} aria-hidden="true">
         <g
@@ -83,12 +99,12 @@ export default function Travel()
       <span className="travel-map-legend">Visited</span>
       <a href="https://www.naturalearthdata.com/downloads/110m-cultural-vectors/">Natural Earth</a>
     </div>
-    <div id="travel-places" hidden={!activeCountry}>
+    <div id="travel-places" ref={places} hidden={!activeCountry}>
       {activeCountry && <>
         <div className="travel-country-heading">
           <h3 ref={countryHeading} tabIndex={-1}>{activeCountry.name}</h3>
-          <button type="button" onClick={returnToWorldMap}>
-            <span aria-hidden="true">← </span>Back to world map
+          <button type="button" className="travel-world-back" onClick={returnToWorldMap}>
+            <CubeLabel><span aria-hidden="true">←</span> Back to world map</CubeLabel>
           </button>
         </div>
         <ul className="travel-postcards">

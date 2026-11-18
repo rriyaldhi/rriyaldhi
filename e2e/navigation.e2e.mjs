@@ -70,7 +70,8 @@ test('keeps the menu and name visible on a narrow screen with reduced motion', a
   await travelLink.focus();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('region', { name: 'Travel', exact: true })).toBeVisible();
-  await expect(name).toBeInViewport({ ratio: 1 });
+  // Fractional text scaling can round the intersection ratio just below 1.
+  await expect(name).toBeInViewport({ ratio: 0.999 });
   await expect(menu).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
   expect(await page.locator('#app').evaluate((app) => app.getAnimations({ subtree: true }))).toEqual([]);

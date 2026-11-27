@@ -10,9 +10,9 @@ const read = name => readFile(new URL(`../dist/${name}`, import.meta.url), 'utf8
 const html = await read('index.html');
 const sitemap = await read('sitemap.xml');
 const robots = await read('robots.txt');
-assert.match(html, /<title>Rizky Riyaldhi \| Personal Website<\/title>/);
+assert.match(html, /<title>Rizky Riyaldhi<\/title>/);
 // Production HTML minification removes optional attribute quotes.
-assert.match(html, /<meta\s+name="?description"?\s+content="[^"]+"/);
+assert.match(html, /<meta\s+name="?description"?\s+content="Explore my bookshelf, illustrated reading notes, and travels\."/);
 assert.match(html, /<link\s+rel="?canonical"?\s+href="?https:\/\/rriyaldhi\.co\/"?[\s>]/);
 assert.match(html, /<meta\s+name="?google-site-verification"?\s+content="?cPaq1wDVVbEJ6xl9WW_vm5q74Zw18s40jluijAKECt8"?[\s>]/);
 assert.match(html, /<h1[^>]*>rizky riyaldhi<\/h1>/);

@@ -50,6 +50,26 @@ export const books: readonly Book[] = [{
         url: "https://www.ynharari.com/book/sapiens/",
       },
     },
+    {
+      image: new URL("../resource/image/books/sapiens-ignorance.jpg", import.meta.url).href,
+      alt: "A cartographer studies an unfinished coastline.",
+      title: "The blank on the map",
+      text: "Harari sees an admission of ignorance at the heart of the scientific revolution. A blank stretch of coastline makes an unanswered question visible. A sailor can set out to chart it, and the map can change with what she finds.",
+      source: {
+        label: "Harari’s notes on the scientific revolution",
+        url: "https://www.ynharari.com/sapiens-references/",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/sapiens-credit.jpg", import.meta.url).href,
+      alt: "A baker borrows coins to build an oven.",
+      title: "Borrowing from tomorrow",
+      text: "A baker needs an oven before she can sell her first loaf. Credit lets her borrow against sales she hopes to make. Harari argues that growing confidence in future production helped societies finance ventures they could never pay for out of yesterday’s earnings.",
+      source: {
+        label: "Harari’s notes on capitalism",
+        url: "https://www.ynharari.com/sapiens-references/",
+      },
+    },
   ],
 }, {
   id: "how-to-avoid-a-climate-disaster",
@@ -86,6 +106,16 @@ export const books: readonly Book[] = [{
       source: {
         label: "Gates on Green Premiums",
         url: "https://www.gatesnotes.com/lowering-green-premiums",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/climate-adaptation.jpg", import.meta.url).href,
+      alt: "A grower tends seedlings beside a water tank.",
+      title: "Living with the heat",
+      text: "A farmer must decide when to sow this season even as the world works to cut emissions. Gates argues for investing in adaptation alongside prevention. Better local forecasts and crops suited to dry spells give farmers more ways to protect a harvest.",
+      source: {
+        label: "Gates on helping farmers adapt",
+        url: "https://www.gatesnotes.com/work/make-ai-work-for-everyone/reader/fighting-climate-change-one-text-at-a-time",
       },
     },
   ],
@@ -126,6 +156,16 @@ export const books: readonly Book[] = [{
         url: "https://pubmed.ncbi.nlm.nih.gov/19520245/",
       },
     },
+    {
+      image: new URL("../resource/image/books/dog-play.jpg", import.meta.url).href,
+      alt: "A dog bows with its tail high in front of another dog.",
+      title: "An invitation to play",
+      text: "A dog dips its chest and keeps its rump high. Who is watching? Horowitz found that dogs usually offered visual play signals when their playmate was looking. When a partner faced away, dogs were more likely to get its attention first.",
+      source: {
+        label: "Horowitz’s study of dogs at play",
+        url: "https://pubmed.ncbi.nlm.nih.gov/18679727/",
+      },
+    },
   ],
 }, {
   id: "homo-deus",
@@ -162,6 +202,16 @@ export const books: readonly Book[] = [{
       source: {
         label: "Harari on data and power",
         url: "https://time.com/4672373/yuval-noah-harari-homo-deus-interview/",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/homo-deus-humanism.jpg", import.meta.url).href,
+      alt: "A visitor considers an abstract painting.",
+      title: "Who decides what is beautiful?",
+      text: "Two visitors can stand before the same painting and disagree about its worth. Harari uses aesthetic judgment to illustrate humanism, a worldview that gives human experience the authority to determine meaning. In that view, asking each visitor what they felt is a way to answer the question.",
+      source: {
+        label: "Harari on Homo Deus",
+        url: "https://www.ynharari.com/book/homo-deus/",
       },
     },
   ],
@@ -202,6 +252,16 @@ export const books: readonly Book[] = [{
         url: "https://www.svpg.com/discovery-judgement/",
       },
     },
+    {
+      image: new URL("../resource/image/books/inspired-outcomes.jpg", import.meta.url).href,
+      alt: "A designer watches a traveler use a ticket machine.",
+      title: "Give the team a problem",
+      text: "A team asked to help commuters buy tickets faster can change the screen, the payment flow, or both. Cagan argues that giving a team a problem also gives it a meaningful test of success. After release, can people actually buy their tickets faster?",
+      source: {
+        label: "Cagan on outcomes and product teams",
+        url: "https://www.svpg.com/pledge-to-executives/",
+      },
+    },
   ],
 }, {
   id: "the-culture-map",
@@ -237,6 +297,36 @@ export const books: readonly Book[] = [{
       text: "Some colleagues build trust through reliable work; others place more weight on personal connection. Meyer’s scales offer starting points for conversation, while leaving room for individuals to differ from cultural patterns.",
       source: {
         label: "Meyer on the cultural scales",
+        url: "https://erinmeyer.com/corporate-mapping-tool-report/",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/culture-decisions.jpg", import.meta.url).href,
+      alt: "Colleagues place pebbles in a shared dish around a meeting table.",
+      title: "Who makes the call?",
+      text: "A manager can hold the most senior title and still wait for everyone to agree. Meyer treats rank and decision-making as separate questions. Before a meeting, it helps to say whether the group will decide together or advise the person who will decide.",
+      source: {
+        label: "Meyer on leading and deciding",
+        url: "https://erinmeyer.com/corporate-mapping-tool-report/",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/culture-persuasion.jpg", import.meta.url).href,
+      alt: "A teacher demonstrates an arch with a bridge model and a drawing.",
+      title: "Where an argument begins",
+      text: "Imagine proposing a new bridge. One audience wants to see a bridge like it that already works. Another wants to understand the engineering principle first. Meyer suggests adjusting the order of the argument to how listeners prefer to reason.",
+      source: {
+        label: "Meyer on persuasion",
+        url: "https://erinmeyer.com/corporate-mapping-tool-report/",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/culture-disagreement.jpg", import.meta.url).href,
+      alt: "Colleagues debate while a teammate listens.",
+      title: "What an objection means",
+      text: "One colleague challenges a proposal in front of the team, expecting the debate to sharpen it. Another hears a public rebuke. Meyer suggests finding out how colleagues prefer to raise objections. An invitation to comment privately can surface a concern the meeting missed.",
+      source: {
+        label: "Meyer on disagreement",
         url: "https://erinmeyer.com/corporate-mapping-tool-report/",
       },
     },
@@ -278,6 +368,26 @@ export const books: readonly Book[] = [{
         url: "https://calnewport.com/the-book-facebook-doesnt-want-you-to-read/",
       },
     },
+    {
+      image: new URL("../resource/image/books/deep-work-shutdown.jpg", import.meta.url).href,
+      alt: "A worker closes a notebook at dusk.",
+      title: "Give work an ending",
+      text: "An unanswered email can follow you home in your head. Newport ends his day by gathering loose tasks, checking upcoming commitments, and deciding when to pick them up. A written place to resume makes it easier to close the laptop for the evening.",
+      source: {
+        label: "Newport’s shutdown ritual",
+        url: "https://calnewport.com/drastically-reduce-stress-with-a-work-shutdown-ritual/",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/deep-work-tools.jpg", import.meta.url).href,
+      alt: "A craftsperson selects a tool at a workbench.",
+      title: "Practice at the edge of your skill",
+      text: "A woodworker learning a joint can cut it, test its fit, and see exactly where the next cut needs adjusting. Newport connects deep work to deliberate practice. Focusing on a demanding skill and getting feedback gives the next hour of practice a specific purpose.",
+      source: {
+        label: "Newport on Deep Work",
+        url: "https://calnewport.com/the-book-facebook-doesnt-want-you-to-read/",
+      },
+    },
   ],
 }, {
   id: "zen",
@@ -311,6 +421,16 @@ export const books: readonly Book[] = [{
       alt: "A person tends a flower with a new bud and a fallen petal.",
       title: "Let change teach you",
       text: "Planting a flower and watching it grow offers a daily encounter with change. Masuno uses such modest practices to bring attention back to the living world and the moment we can actually experience.",
+      source: {
+        label: "Masuno’s guide to simple living",
+        url: "https://www.penguin.co.uk/books/311881/zen-the-art-of-simple-living-by-masuno-shunmyo/9780241371831",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/zen-space.jpg", import.meta.url).href,
+      alt: "A single branch stands in a vase on a clear surface.",
+      title: "Leave some space",
+      text: "Clear a crowded surface and put back a single vase. The branch in it becomes easier to see, and you may discover how little the rest was doing for you. Masuno treats letting go of unnecessary possessions as a practice in simplicity.",
       source: {
         label: "Masuno’s guide to simple living",
         url: "https://www.penguin.co.uk/books/311881/zen-the-art-of-simple-living-by-masuno-shunmyo/9780241371831",
@@ -354,6 +474,16 @@ export const books: readonly Book[] = [{
         url: "https://markmanson.net/responsibility-fault-fallacy",
       },
     },
+    {
+      image: new URL("../resource/image/books/subtle-values.jpg", import.meta.url).href,
+      alt: "A violinist rehearses alone.",
+      title: "How do you keep score?",
+      text: "A musician who measures a rehearsal by applause has little to go on in an empty room. If the measure is playing a difficult passage well, the same hour can count. Manson asks whether the standards we use to judge ourselves are within our influence.",
+      source: {
+        label: "Manson on personal values",
+        url: "https://markmanson.net/personal-values",
+      },
+    },
   ],
 }, {
   id: "thinking-fast-and-slow",
@@ -391,6 +521,36 @@ export const books: readonly Book[] = [{
         url: "https://us.macmillan.com/books/9780374275631/thinkingfastandslow/",
       },
     },
+    {
+      image: new URL("../resource/image/books/thinking-loss.jpg", import.meta.url).href,
+      alt: "Hands exchange coins across a table.",
+      title: "What counts as a loss?",
+      text: "Would you toss a coin to win €50 on heads and lose €50 on tails? Many people turn down that bet. Kahneman and Tversky found that people often give a loss more weight than an equal gain, measured from where they started.",
+      source: {
+        label: "Kahneman on loss aversion",
+        url: "https://kahneman.scholar.princeton.edu/lectures",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/thinking-memory.jpg", import.meta.url).href,
+      alt: "A travel journal records a mountain peak beside a winding trail.",
+      title: "Which hike will you remember?",
+      text: "A hard climb and a beautiful finish might dominate your memory of a hike that was pleasant for hours. Kahneman describes how an intense moment and the ending can carry unusual weight when we look back and decide whether to repeat an experience.",
+      source: {
+        label: "Kahneman and Riis on experience and memory",
+        url: "https://kahneman.scholar.princeton.edu/sites/g/files/toruqf3831/files/kahneman/files/living_dk_jr_2005.pdf",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/thinking-base-rates.jpg", import.meta.url).href,
+      alt: "A builder compares plans with past project files.",
+      title: "The outside view",
+      text: "Before estimating how long a renovation will take, ask how long similar renovations actually took. Kahneman calls this the outside view. Starting with a range of past outcomes gives you a reason to question the smooth sequence of events in your own plan.",
+      source: {
+        label: "Lovallo and Kahneman on forecasting",
+        url: "https://faculty.econ.ucdavis.edu/faculty/nehring/teaching/econ106/readings/Lovallo-Kahneman-Optimism-HBR%20July%202003.pdf",
+      },
+    },
   ],
 }, {
   id: "rescuing-penny-jane",
@@ -426,6 +586,16 @@ export const books: readonly Book[] = [{
       text: "Finding homes takes many people doing ordinary work: walking dogs, fostering, training, and helping adopters. Sutherland follows the volunteers and shelter workers whose repeated acts of care make another chance possible.",
       source: {
         label: "Sutherland on shelter dogs",
+        url: "https://books.google.com/books?id=RMBdEQAAQBAJ",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/penny-match.jpg", import.meta.url).href,
+      alt: "A volunteer talks with a prospective adopter beside a resting dog.",
+      title: "Finding a home that fits",
+      text: "Falling for a dog at the shelter is one part of adoption. Sutherland’s stories also invite a practical question. Can this household offer what this particular dog needs on an ordinary Tuesday, when someone is at work and the street outside is busy?",
+      source: {
+        label: "Sutherland’s account of finding homes",
         url: "https://books.google.com/books?id=RMBdEQAAQBAJ",
       },
     },
@@ -467,6 +637,16 @@ export const books: readonly Book[] = [{
         url: "https://sites.prh.com/ikigai",
       },
     },
+    {
+      image: new URL("../resource/image/books/ikigai-flow.jpg", import.meta.url).href,
+      alt: "A potter shapes a bowl on a wheel.",
+      title: "When time slips by",
+      text: "A potter looks up from shaping a bowl and discovers the afternoon has gone. García and Miralles suggest taking such moments of absorption seriously. Remember the last few activities that held your attention that way and look for what they have in common.",
+      source: {
+        label: "García and Miralles on ikigai",
+        url: "https://sites.prh.com/ikigai",
+      },
+    },
   ],
 }, {
   id: "the-startup-of-you",
@@ -502,6 +682,16 @@ export const books: readonly Book[] = [{
       text: "Professional relationships can bring perspective, information, and opportunities. Hoffman and Casnocha emphasize genuine alliances and a varied network, built through ongoing relationships in which people help one another.",
       source: {
         label: "Hoffman and Casnocha on career growth",
+        url: "https://www.startupofyou.com/",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/startup-risk.jpg", import.meta.url).href,
+      alt: "A climber checks a safety rope before the next foothold.",
+      title: "Make a risk survivable",
+      text: "Before changing careers, try a short project in the new field. It gives you evidence about the work and limits what a bad fit will cost. Hoffman and Casnocha argue that learning to take manageable risks can make a career more resilient.",
+      source: {
+        label: "Hoffman and Casnocha on career risk",
         url: "https://www.startupofyou.com/",
       },
     },
@@ -543,6 +733,16 @@ export const books: readonly Book[] = [{
         url: "https://us.macmillan.com/books/9781250320599/nobodycaresaboutyourcareer/",
       },
     },
+    {
+      image: new URL("../resource/image/books/career-feedback.jpg", import.meta.url).href,
+      alt: "Two coworkers read a marked-up draft together.",
+      title: "Ask while you can still revise",
+      text: "Show a colleague an early draft and ask where they lost the thread. Their answer gives you a specific revision to try before anyone depends on the finished work. Ayers Badan treats listening to feedback as a skill people can practice at every level.",
+      source: {
+        label: "Ayers Badan on listening to feedback",
+        url: "https://leadersmag.com/issues/2024.4_Oct/PDFs/LEADERS_Badan_Food52.pdf",
+      },
+    },
   ],
 }, {
   id: "buddhism-plain-and-simple",
@@ -581,6 +781,16 @@ export const books: readonly Book[] = [{
         url: "https://www.tuttlepublishing.com/bestsellers/buddhism-plain-and-simple-hardcover-with-jacket",
       },
     },
+    {
+      image: new URL("../resource/image/books/buddhism-craving.jpg", import.meta.url).href,
+      alt: "A hand holds a fallen leaf above a stream.",
+      title: "Wanting the moment to stay",
+      text: "A pleasant afternoon starts to slip away. Even while you are enjoying it, wishing it would last can bring a new uneasiness. Hagen uses craving to explain this familiar form of suffering. You can begin to see it by noticing the instant enjoyment turns into holding on.",
+      source: {
+        label: "Hagen’s introduction to Buddhist practice",
+        url: "https://www.tuttlepublishing.com/bestsellers/buddhism-plain-and-simple-hardcover-with-jacket",
+      },
+    },
   ],
 }, {
   id: "designing-data-intensive-applications",
@@ -615,6 +825,46 @@ export const books: readonly Book[] = [{
       text: "A data system can combine storage and processing tools rather than ask one database to do everything. Kleppmann examines how batches, streams, and change logs let applications derive useful views from shared underlying data.",
       source: {
         label: "Kleppmann on data systems",
+        url: "https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/data-partitions.jpg", import.meta.url).href,
+      alt: "One of three mail slots overflows with envelopes.",
+      title: "One busy partition",
+      text: "A service might divide its posts among servers by author. That works until one author draws most of the traffic. Kleppmann shows why choosing a partition key means asking which records people will read and write together, and where the load will land.",
+      source: {
+        label: "Kleppmann on partitioning",
+        url: "https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/data-transactions.jpg", import.meta.url).href,
+      alt: "A bookkeeper records a transfer in two ledgers.",
+      title: "A transfer has two halves",
+      text: "Moving money between accounts takes two writes. If a crash occurs after the debit, the books can show money disappearing. A transaction with atomicity lets the database commit both changes together or discard the incomplete transfer.",
+      source: {
+        label: "Kleppmann on transactions",
+        url: "https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/data-schema.jpg", import.meta.url).href,
+      alt: "Two clerks compare different versions of a form.",
+      title: "Old readers, new records",
+      text: "A service adds a delivery-instructions field to an order. During the rollout, older programs may read new orders, and newer programs still have to read yesterday’s. Kleppmann shows how rules for missing and unfamiliar fields let software and stored data evolve at different speeds.",
+      source: {
+        label: "Kleppmann on encoding and evolution",
+        url: "https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/",
+      },
+    },
+    {
+      image: new URL("../resource/image/books/data-timeout.jpg", import.meta.url).href,
+      alt: "A postal worker checks a watch by a mailbox.",
+      title: "What a timeout tells you",
+      text: "You submit an order and the confirmation never arrives. The server might have stopped before saving it, or saved it and lost the reply. Kleppmann explains why a timeout leaves the outcome uncertain. A stable order identifier can help a service recognize a retry and avoid charging twice.",
+      source: {
+        label: "Kleppmann on distributed systems",
         url: "https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/",
       },
     },

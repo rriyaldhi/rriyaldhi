@@ -85,14 +85,14 @@ test('opens the illustrated shelf cover and inverts buttons on hover', async ({ 
     Math.abs(new DOMMatrixReadOnly(getComputedStyle(element).transform).m22),
   )).toBeLessThan(0.01);
   await previous.click();
-  await expect(book.getByRole('status')).toHaveText('Page 1 of 3');
+  await expect(book.getByRole('status')).toHaveText('Page 1 of 5');
   await expect(book).not.toHaveAttribute('data-cover-motion');
   await book.getByRole('button', { name: 'Close book' }).click();
   await expect(book).toBeHidden();
   expect((await coverMotion()).map(({ direction }) => direction)).toEqual(['normal', 'reverse']);
 });
 
-test('reads all three Sapiens pages and returns to the bookshelf', async ({ page }) => {
+test('reads all five Sapiens pages and returns to the bookshelf', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/#books');
   const openBook = page.getByRole('button', { name: 'Read Sapiens' });
@@ -119,11 +119,15 @@ test('reads all three Sapiens pages and returns to the bookshelf', async ({ page
   await page.keyboard.press('ArrowRight');
   await expectSingleLine(book.getByRole('heading', { name: 'Power and happiness' }));
   await expect(book.getByText(/More power doesn’t guarantee more happiness\./)).toBeVisible();
+  for (const heading of ['The blank on the map', 'Borrowing from tomorrow']) {
+    await next.click();
+    await expect(book.getByRole('heading', { name: heading })).toBeVisible();
+  }
   await expect(next).toBeDisabled();
-  await expect(book.getByRole('status')).toHaveText('Page 3 of 3');
+  await expect(book.getByRole('status')).toHaveText('Page 5 of 5');
 
   await previous.click();
-  await expect(book.getByRole('status')).toHaveText('Page 2 of 3');
+  await expect(book.getByRole('status')).toHaveText('Page 4 of 5');
   await page.keyboard.press('Escape');
   await expect(book).toBeHidden();
   await expect(openBook).toBeFocused();
@@ -139,7 +143,7 @@ test('keeps the reader inside a narrow viewport with reduced motion', async ({ p
   expect(await book.evaluate((dialog) => dialog.getAnimations().length)).toBe(0);
   await expectSingleLine(book.getByRole('heading', { name: 'Sapiens', exact: true }));
   await book.getByRole('button', { name: 'Next page' }).click();
-  await expect(book.getByRole('status')).toHaveText('Page 2 of 3');
+  await expect(book.getByRole('status')).toHaveText('Page 2 of 5');
   await expectSingleLine(book.getByRole('heading', { name: 'Shared stories' }));
   await expect(book.getByRole('article')).toHaveCSS('animation-name', 'none');
   await book.getByRole('button', { name: 'Next page' }).click();
@@ -156,10 +160,10 @@ for (const [orientation, viewport] of [
   test.describe(`on a short mobile viewport in ${orientation}`, () => {
     test.use({ viewport, isMobile: true, hasTouch: true });
 
-    for (const [title, secondPage] of [
-      ['Sapiens', 'Shared stories'],
-      ['How to Avoid a Climate Disaster', 'Beyond clean power'],
-      ['Inside of a Dog', 'Smelling the past'],
+    for (const [title, secondPage, total] of [
+      ['Sapiens', 'Shared stories', 5],
+      ['How to Avoid a Climate Disaster', 'Beyond clean power', 4],
+      ['Inside of a Dog', 'Smelling the past', 4],
     ]) {
       test(`shows the start of page two of ${title} after tapping Next`, async ({ page }) => {
         await page.goto('/#books');
@@ -170,7 +174,7 @@ for (const [orientation, viewport] of [
         const firstImage = await illustration.getAttribute('src');
 
         await controls.getByRole('button', { name: 'Next page' }).tap();
-        await expect(controls.getByRole('status')).toHaveText('Page 2 of 3');
+        await expect(controls.getByRole('status')).toHaveText(`Page 2 of ${total}`);
         const heading = book.getByRole('heading', { name: secondPage });
         await expect(heading).toBeInViewport({ ratio: 1 });
         await expect.poll(async () => {
@@ -227,14 +231,14 @@ test('reads the climate book and keeps its page position separate from Sapiens',
     return dialog.scrollTop;
   })).toBe(0);
 
-  for (const heading of ['Why net zero?', 'Beyond clean power', 'The Green Premium']) {
+  for (const heading of ['Why net zero?', 'Beyond clean power', 'The Green Premium', 'Living with the heat']) {
     const pageHeading = climateBook.getByRole('heading', { name: heading });
     await expectSingleLine(pageHeading);
     await expect(pageHeading).toBeInViewport();
     const illustration = climateBook.getByRole('img');
     await expect.poll(() => illustration.evaluate((image) => image.naturalWidth)).toBeGreaterThan(0);
     await expect(climateBook.getByRole('link', { name: /^Gates/ })).toBeVisible();
-    if (heading !== 'The Green Premium') {
+    if (heading !== 'Living with the heat') {
       await next.click();
       await expect(next).toBeInViewport();
     }
@@ -245,9 +249,9 @@ test('reads the climate book and keeps its page position separate from Sapiens',
 
   await page.getByRole('button', { name: 'Read Sapiens' }).click();
   const sapiens = page.getByRole('dialog', { name: 'Sapiens' });
-  await expect(sapiens.getByRole('status')).toHaveText('Page 1 of 3');
+  await expect(sapiens.getByRole('status')).toHaveText('Page 1 of 5');
   await sapiens.getByRole('button', { name: 'Close book' }).click();
 
   await openClimateBook.click();
-  await expect(climateBook.getByRole('status')).toHaveText('Page 3 of 3');
+  await expect(climateBook.getByRole('status')).toHaveText('Page 4 of 4');
 });

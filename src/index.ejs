@@ -7,17 +7,46 @@
     <meta name="description" content="Explore my bookshelf, illustrated reading notes, and travels.">
     <link rel="canonical" href="https://rriyaldhi.co/">
     <meta name="google-site-verification" content="cPaq1wDVVbEJ6xl9WW_vm5q74Zw18s40jluijAKECt8">
+    <style>
+      .site-loader {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 12px;
+        background: #fff;
+        color: #333;
+        font: 14px system-ui, sans-serif;
+      }
+      .site-loader::before {
+        content: "";
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ddd;
+        border-top-color: currentColor;
+        border-radius: 50%;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .site-loader::before { animation: loader-turn 900ms linear infinite; }
+      }
+      @keyframes loader-turn { to { transform: rotate(1turn); } }
+    </style>
+    <noscript><style>.site-loader { display: none; }</style></noscript>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand:300&display=swap">
   </head>
   <body>
     <div id="main">
-      <main>
-        <h1>rizky riyaldhi</h1>
-        <nav aria-label="Sections">
-          <a href="#books">Books</a>
-          <a href="#travel">Travel</a>
-        </nav>
-      </main>
+      <div class="site-loader" role="status">Loading…</div>
+      <noscript>
+        <main>
+          <h1>rizky riyaldhi</h1>
+          <nav aria-label="Sections">
+            <a href="#books">Books</a>
+            <a href="#travel">Travel</a>
+          </nav>
+        </main>
+      </noscript>
     </div>
   </body>
 </html>
